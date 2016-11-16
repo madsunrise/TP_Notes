@@ -20,7 +20,7 @@
         <activity
             android:name=".Activities.AddingActivity"
             android:label="@string/adding_note"
-            android:theme="@style/AppTheme.NoActionBar" >
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
     </application>
