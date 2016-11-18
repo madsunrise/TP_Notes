@@ -5,31 +5,31 @@ package com.rv150.notes.Models;
  */
 
 public class Category {
-    private long id;
-    private String name;
+    private long mID;
+    private String mName;
 
     public Category(String name) {
-        this.name = name;
+        this.mName = name;
     }
 
     public Category(String name, long id) {
-        this.name = name;
-        this.id = id;
+        this.mName = name;
+        this.mID = id;
     }
 
     public void setId(long id) {
-        this.id = id;
+        this.mID = id;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.mName = name;
     }
 
     public long getId() {
-        return id;
+        return mID;
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 }

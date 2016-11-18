@@ -9,4 +9,6 @@
     <string name="adding_note">Добавление заметки</string>
     <string name="content">Содержание</string>
     <string name="add_categories">Добавить категории</string>
+    <string name="save">Сохранить</string>
+    <string name="fill_all_fields">Заполните все поля</string>
 </resources>

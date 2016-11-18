@@ -37,14 +37,14 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_NOTE_TABLE  =
             "CREATE TABLE " + Note.TABLE_NAME + " (" +
                     Note._ID + " INTEGER PRIMARY KEY," +
-                    Note.COLUMN_NAME_NAME + " VARCHAR(50) NOT NULL," +
+                    Note.COLUMN_NAME_NAME + " VARCHAR(40) NOT NULL," +
                     Note.COLUMN_NAME_CONTENT + " TEXT NOT NULL," +
                     Note.COLUMN_NAME_CREATED_AT + " INTEGER NOT NULL)";
 
     private static final String SQL_CREATE_CATEGORY_TABLE  =
             "CREATE TABLE " + Category.TABLE_NAME + " (" +
                     Category._ID + " INTEGER PRIMARY KEY," +
-                    Category.COLUMN_NAME_NAME + " VARCHAR(50) UNIQUE NOT NULL)";
+                    Category.COLUMN_NAME_NAME + " VARCHAR(30) UNIQUE NOT NULL)";
 
     // Table for many-to-many relationship
     private static final String SQL_CREATE_NOTE_CATEGORY_TABLE  =

@@ -15,16 +15,14 @@ import java.util.List;
  */
 
 public class CategoryDAO {
-    private DBHelper dbHelper;
-    private NoteDAO noteDAO;
+    private DBHelper mDBHelper;
 
     public CategoryDAO(Context context) {
-        dbHelper = new DBHelper(context);
-        noteDAO = new NoteDAO(context);
+        mDBHelper = new DBHelper(context);
     }
 
     public List<Category> getAll() {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        SQLiteDatabase db = mDBHelper.getReadableDatabase();
         String query = "SELECT * FROM " + DBHelper.Category.TABLE_NAME;
         Cursor cursor = db.rawQuery(query, null);
         List<Category> categories = new ArrayList<>();
@@ -38,12 +36,19 @@ public class CategoryDAO {
 
 
     public List<Category> getNoteCategories (long noteId) {
-        SQLiteDatabase db = dbHelper.getReadableDatabase();
-        String query = "SELECT " + DBHelper.Category.COLUMN_NAME_NAME + ',' +
-                DBHelper.Category._ID + " FROM " + DBHelper.Category.TABLE_NAME +
-                " JOIN " + DBHelper.NoteCategory.TABLE_NAME + " ON " +
-                DBHelper.Category._ID + '=' + DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID +
-                " WHERE " + DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID + " = ?";
+        SQLiteDatabase db = mDBHelper.getReadableDatabase();
+        String CATEGORY_TABLE = DBHelper.Category.TABLE_NAME;
+        String CATEGORY_NAME = DBHelper.Category.COLUMN_NAME_NAME;
+        String CATEGORY_ID = DBHelper.Category._ID;
+        String NOTE_CATEGORY_TABLE = DBHelper.NoteCategory.TABLE_NAME;
+        String NOTE_CATEGORY_CATEGORY_ID = DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID;
+        String NOTE_CATEGORY_NOTE_ID = DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID;
+        String query = "SELECT " + CATEGORY_TABLE + '.' + CATEGORY_NAME + ',' +
+               CATEGORY_TABLE + '.' + CATEGORY_ID + " FROM " + CATEGORY_TABLE +
+                " JOIN " + NOTE_CATEGORY_TABLE + " ON " +
+                CATEGORY_TABLE + '.' + CATEGORY_ID + '=' +
+                NOTE_CATEGORY_TABLE + '.' + NOTE_CATEGORY_CATEGORY_ID +
+                " WHERE " + NOTE_CATEGORY_NOTE_ID + " = ?";
 
         Cursor cursor = db.rawQuery(query, new String[] {String.valueOf(noteId)});
         List<Category> categories = new ArrayList<>();
