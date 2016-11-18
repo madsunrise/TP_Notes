@@ -46,7 +46,11 @@ public class NoteDAO {
     public List<Note> getFromCategory(long categoryId) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
 
-        String query = "SELECT * FROM " + DBHelper.Note.TABLE_NAME +
+        String query = "SELECT " + DBHelper.Note.COLUMN_NAME_NAME + ',' +
+                DBHelper.Note.COLUMN_NAME_CONTENT + ',' +
+                DBHelper.Note.COLUMN_NAME_CREATED_AT +
+                DBHelper.Note._ID +
+                " FROM " + DBHelper.Note.TABLE_NAME +
                 " JOIN " + DBHelper.NoteCategory.TABLE_NAME + " ON "
                 + DBHelper.Note._ID + '=' + DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID +
                 " WHERE " + DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID + " = ?";

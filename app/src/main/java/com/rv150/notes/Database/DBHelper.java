@@ -46,16 +46,18 @@ public class DBHelper extends SQLiteOpenHelper {
                     Category._ID + " INTEGER PRIMARY KEY," +
                     Category.COLUMN_NAME_NAME + " VARCHAR(50) UNIQUE NOT NULL)";
 
+    // Table for many-to-many relationship
     private static final String SQL_CREATE_NOTE_CATEGORY_TABLE  =
             "CREATE TABLE " + NoteCategory.TABLE_NAME + " (" +
                     NoteCategory._ID + " INTEGER PRIMARY KEY," +
                     NoteCategory.COLUMN_NAME_NOTE_ID + " INTEGER NOT NULL," +
                     NoteCategory.COLUMN_NAME_CATEGORY_ID + " INTEGER NOT NULL," +
+                    "UNIQUE (" + NoteCategory.COLUMN_NAME_NOTE_ID +','
+                    + NoteCategory.COLUMN_NAME_CATEGORY_ID + ")," +
                     "FOREIGN KEY (" + NoteCategory.COLUMN_NAME_NOTE_ID + ") REFERENCES " +
                     Note.TABLE_NAME + "(" + Note._ID + ") ON DELETE CASCADE," +
                     "FOREIGN KEY (" + NoteCategory.COLUMN_NAME_CATEGORY_ID + ") REFERENCES " +
                     Category.TABLE_NAME + "(" + Category._ID + ") ON DELETE CASCADE)";
-
 
 
     public DBHelper(Context context) {
