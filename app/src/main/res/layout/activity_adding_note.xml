@@ -49,7 +49,7 @@
     </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:text="@string/add_categories"
+        android:text="@string/add_category"
         android:layout_gravity="end"
         android:textColor="@color/white"
         android:layout_width="146dp"

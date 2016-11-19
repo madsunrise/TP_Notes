@@ -1,5 +1,6 @@
 package com.rv150.notes.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -7,12 +8,16 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.text.InputType;
+import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -22,10 +27,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.rv150.notes.Database.DAO.CategoryDAO;
 import com.rv150.notes.Database.DAO.NoteDAO;
+import com.rv150.notes.Database.DBHelper;
 import com.rv150.notes.ItemClickSupport;
+import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
 import com.rv150.notes.RecyclerAdapter;
@@ -66,7 +75,7 @@ public class MainActivity extends AppCompatActivity
         mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.setDrawerListener(toggle);
+        mDrawer.addDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -92,6 +101,7 @@ public class MainActivity extends AppCompatActivity
         noteList = mNoteDAO.getAll();
         adapter = new RecyclerAdapter(noteList);
         mRecyclerView.setAdapter(adapter);
+
     }
 
 
@@ -99,7 +109,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (mDrawer.isDrawerOpen(GravityCompat.START)) {
             mDrawer.closeDrawer(GravityCompat.START);
         } else {
@@ -124,21 +133,16 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
+
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        if (id == R.id.nav_all_notes) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_add_category) {
+            createCategoryDialog();
 
         } else if (id == R.id.nav_send) {
 
@@ -146,6 +150,67 @@ public class MainActivity extends AppCompatActivity
 
         mDrawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+
+    private void createCategoryDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(R.string.creating_category);
+
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+
+        builder.setView(input, 70, 0, 100, 0);
+
+        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String result = input.getText().toString();
+                if (result.isEmpty()) {
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            R.string.field_is_empty, Toast.LENGTH_SHORT);
+                    toast.show();
+                    createCategoryDialog(); // Вызываем заново
+                }
+                else {
+                    result = result.substring(0, 1).toUpperCase() + result.substring(1);
+                    createCategory(result);
+                }
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+        builder.show();
+    }
+
+    private void createCategory(String name) {
+        Category category = new Category(name);
+        long id;
+        try {
+            id = mCategoryDAO.insertCategory(category);
+        }
+        catch (RuntimeException e) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.category_with_this_name_already_exists, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        category.setId(id);
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        MenuItem mainGroupItem = navigationView.getMenu().getItem(0);
+        mainGroupItem.setVisible(false);
+        SubMenu subMenu = mainGroupItem.getSubMenu();
+        subMenu.add(name);
+
+
+        Toast toast = Toast.makeText(getApplicationContext(),
+                R.string.category_was_created, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
 

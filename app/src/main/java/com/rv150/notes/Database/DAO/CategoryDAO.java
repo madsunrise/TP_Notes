@@ -1,5 +1,6 @@
 package com.rv150.notes.Database.DAO;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -60,6 +61,12 @@ public class CategoryDAO {
         return categories;
     }
 
+    public long insertCategory (Category category) {
+            SQLiteDatabase db = mDBHelper.getWritableDatabase();
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(DBHelper.Category.COLUMN_NAME_NAME, category.getName());
+            return db.insert(DBHelper.Category.TABLE_NAME, null, contentValues);
+    }
 
 
     private Category mapCategory(Cursor cursor) {

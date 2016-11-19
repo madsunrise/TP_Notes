@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <group android:checkableBehavior="single">
+    <item  android:title="@string/categories" android:id="@+id/submenu_categories">
+        <menu>
         <item
-            android:id="@+id/nav_camera"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:id="@+id/nav_all_notes"
+            android:title="@string/all_notes" />
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
-        <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
-        <item
-            android:id="@+id/nav_manage"
-            android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
-    </group>
+            android:id="@+id/nav_add_category"
+            android:title="@string/add_category"
+            />
+        </menu>
+    </item>
 
-    <item android:title="Communicate">
+    <item android:title="Communicate"
+        android:id="@+id/submenu_support">
         <menu>
             <item
                 android:id="@+id/nav_share"
