@@ -8,7 +8,6 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.design.internal.NavigationMenu;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -20,9 +19,6 @@ import android.text.InputType;
 import android.view.SubMenu;
 import android.view.View;
 import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -30,9 +26,13 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.rv150.notes.Database.DAO.CategoryDAO;
 import com.rv150.notes.Database.DAO.NoteDAO;
-import com.rv150.notes.Database.DBHelper;
 import com.rv150.notes.ItemClickSupport;
 import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
@@ -43,12 +43,11 @@ import java.util.List;
 
 import static com.rv150.notes.Variables.RC_ADDING_NOTE;
 
-public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
 
-    private DrawerLayout mDrawer;
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
+    private Drawer drawer;
 
     private RecyclerAdapter adapter;
     private List<Note> noteList;
@@ -72,14 +71,37 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        mDrawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(toggle);
-        toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        PrimaryDrawerItem settings = new PrimaryDrawerItem()
+                .withIdentifier(2)
+                .withName(R.string.settings)
+                .withSelectable(false);
+
+        PrimaryDrawerItem ololo = new PrimaryDrawerItem()
+                .withIdentifier(3)
+                .withName("Ololo")
+                .withSelectable(false);
+
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withHeader(R.layout.nav_header_main)
+                .addDrawerItems(
+                        settings,
+                        new DividerDrawerItem(),
+                        ololo,
+                        new DividerDrawerItem()
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        //drawerPushed(drawerItem);
+                        return true;
+                    }
+                })
+                .build();
+
+
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_main);
         setUpRecyclerView();
@@ -109,11 +131,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-            mDrawer.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
+//        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
+//            mDrawer.closeDrawer(GravityCompat.START);
+//        } else {
+//            super.onBackPressed();
+//        }
+        super.onBackPressed();
     }
 
     @Override
@@ -133,24 +156,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
-        if (id == R.id.nav_all_notes) {
-
-        } else if (id == R.id.nav_add_category) {
-            createCategoryDialog();
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        mDrawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
 
     private void createCategoryDialog() {
@@ -201,11 +206,7 @@ public class MainActivity extends AppCompatActivity
         }
         category.setId(id);
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        MenuItem mainGroupItem = navigationView.getMenu().getItem(0);
-        mainGroupItem.setVisible(false);
-        SubMenu subMenu = mainGroupItem.getSubMenu();
-        subMenu.add(name);
+        // Добавить в drawer
 
 
         Toast toast = Toast.makeText(getApplicationContext(),
