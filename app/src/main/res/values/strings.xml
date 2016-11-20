@@ -19,4 +19,5 @@
     <string name="category_with_this_name_already_exists">Категория с таким именем уже существует!</string>
     <string name="category_was_created">Категория создана</string>
     <string name="categories">Категории</string>
+    <string name="create_category">Создать категорию</string>
 </resources>

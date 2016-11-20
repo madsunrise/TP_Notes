@@ -2,12 +2,14 @@ package com.rv150.notes.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -16,9 +18,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
-import android.view.SubMenu;
 import android.view.View;
-import android.support.design.widget.NavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -30,6 +30,7 @@ import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 import com.rv150.notes.Database.DAO.CategoryDAO;
 import com.rv150.notes.Database.DAO.NoteDAO;
@@ -38,29 +39,42 @@ import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
 import com.rv150.notes.RecyclerAdapter;
+import com.rv150.notes.Constants;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
-import static com.rv150.notes.Variables.RC_ADDING_NOTE;
+import static com.rv150.notes.Constants.RC_ADDING_NOTE;
 
 public class MainActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
     private Drawer drawer;
+    private Toolbar toolbar;
 
-    private RecyclerAdapter adapter;
-    private List<Note> noteList;
+    private RecyclerAdapter mRecyclerAdapter;
+    private List<Note> mAllNotes;
 
     private NoteDAO mNoteDAO;
     private CategoryDAO mCategoryDAO;
+
+    private SharedPreferences mSharedPreferences;
+
+    // смещение идентификаторов для категорий внутри drawer,
+    // тк ID 0-3 заняты под стандартные опции
+    private static final int ID_OFFSET = 10;
+
+    private static final AtomicLong ID_GENERATOR = new AtomicLong();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         mFab = (FloatingActionButton) findViewById(R.id.fab);
         mFab.setOnClickListener(new View.OnClickListener() {
@@ -71,43 +85,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        mNoteDAO = new NoteDAO(getApplicationContext());
+        mCategoryDAO = new CategoryDAO(getApplicationContext());
 
-        PrimaryDrawerItem settings = new PrimaryDrawerItem()
-                .withIdentifier(2)
-                .withName(R.string.settings)
-                .withSelectable(false);
 
-        PrimaryDrawerItem ololo = new PrimaryDrawerItem()
-                .withIdentifier(3)
-                .withName("Ololo")
-                .withSelectable(false);
-
-        drawer = new DrawerBuilder()
-                .withActivity(this)
-                .withToolbar(toolbar)
-                .withHeader(R.layout.nav_header_main)
-                .addDrawerItems(
-                        settings,
-                        new DividerDrawerItem(),
-                        ololo,
-                        new DividerDrawerItem()
-                )
-                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                    @Override
-                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                        //drawerPushed(drawerItem);
-                        return true;
-                    }
-                })
-                .build();
-
+        setUpDrawer();
 
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_main);
         setUpRecyclerView();
 
-        mNoteDAO = new NoteDAO(getApplicationContext());
-        mCategoryDAO = new CategoryDAO(getApplicationContext());
+
+        mAllNotes = mNoteDAO.getAll();
+        updateRecyclerWithData(mAllNotes);  // показываем все заметки
     }
 
 
@@ -120,9 +110,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        noteList = mNoteDAO.getAll();
-        adapter = new RecyclerAdapter(noteList);
-        mRecyclerView.setAdapter(adapter);
+
+
 
     }
 
@@ -131,12 +120,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-//            mDrawer.closeDrawer(GravityCompat.START);
-//        } else {
-//            super.onBackPressed();
-//        }
-        super.onBackPressed();
+        if (drawer.isDrawerOpen()) {
+            drawer.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
@@ -158,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void createCategoryDialog() {
+    private void showCreateCategoryDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.creating_category);
 
@@ -175,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(),
                             R.string.field_is_empty, Toast.LENGTH_SHORT);
                     toast.show();
-                    createCategoryDialog(); // Вызываем заново
+                    showCreateCategoryDialog(); // Вызываем заново
                 }
                 else {
                     result = result.substring(0, 1).toUpperCase() + result.substring(1);
@@ -206,13 +194,104 @@ public class MainActivity extends AppCompatActivity {
         }
         category.setId(id);
 
-        // Добавить в drawer
-
+        addCategoryToDrawer(name);
 
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.category_was_created, Toast.LENGTH_SHORT);
         toast.show();
     }
+
+
+
+    private void setUpDrawer() {
+        SharedPreferences.Editor editor = mSharedPreferences.edit();
+
+        long idAllNotes = ID_GENERATOR.getAndIncrement();
+        editor.putLong(Constants.ID_ALL_NOTES, idAllNotes);
+        PrimaryDrawerItem allNotes = new PrimaryDrawerItem()
+                .withIdentifier(idAllNotes)
+                .withName(R.string.all_notes)
+                // withIcon
+                ;
+
+        long idCreateCategory = ID_GENERATOR.getAndIncrement();
+        editor.putLong(Constants.ID_CREATE_CATEGORY, idCreateCategory);
+        SecondaryDrawerItem createCategory = new SecondaryDrawerItem()
+                .withIdentifier(idCreateCategory)
+                .withName(R.string.create_category)
+                // withIcon
+                .withSelectable(false);
+
+
+        long idSettings = ID_GENERATOR.getAndIncrement();
+        editor.putLong(Constants.ID_SETTINGS, idSettings);
+        PrimaryDrawerItem settings = new PrimaryDrawerItem()
+                .withIdentifier(idSettings)
+                .withName(R.string.settings)
+                .withSelectable(false);
+
+        editor.apply();
+
+        drawer = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withHeader(R.layout.nav_header_main)
+                .addDrawerItems(
+                        allNotes,
+                        createCategory,
+                        new DividerDrawerItem(),
+                        settings
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        drawerPushed(drawerItem);
+                        return true;
+                    }
+                })
+                .build();
+
+        // Добавление существующих категорий
+        List<Category> categories = mCategoryDAO.getAll();
+        for (Category category: categories) {
+            addCategoryToDrawer(category.getName());
+        }
+    }
+
+    private void addCategoryToDrawer(String name) {
+        long id = ID_GENERATOR.getAndIncrement();
+        PrimaryDrawerItem newItem =  new PrimaryDrawerItem()
+                .withIdentifier(id)
+                .withName(name);
+        // withIcon
+
+        long idCreateCategory = mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, 0);
+        int position = drawer.getPosition(idCreateCategory); // получаем позицию "Создать категорию"
+        drawer.addItemAtPosition(newItem, position);    //  и помещаем новую категорию на эту позицию
+        drawer.closeDrawer();
+    }
+
+
+    private void drawerPushed(IDrawerItem drawerItem) {
+        long itemId = drawerItem.getIdentifier();
+        if (itemId == Constants.DRAWER_ID_CREATE_CATEGORY) {
+                showCreateCategoryDialog();
+                return;
+        }
+        if (itemId == Constants.DRAWER_ID_ALL_NOTES) {
+            updateRecyclerWithData(mAllNotes);
+        }
+        drawer.closeDrawer();
+    }
+
+
+
+    
+    private void updateRecyclerWithData(List<Note> newData) {
+        mRecyclerAdapter = new RecyclerAdapter(newData);
+        mRecyclerView.setAdapter(mRecyclerAdapter);
+    }
+
 
 
     private void setUpRecyclerView() {
