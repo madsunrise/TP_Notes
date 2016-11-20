@@ -73,7 +73,7 @@
 
 
         <Button
-            android:text="@string/add_category"
+            android:text="@string/to_choose_categories"
             android:layout_gravity="end"
             android:textColor="@color/white"
             android:layout_width="146dp"

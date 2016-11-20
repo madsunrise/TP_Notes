@@ -8,7 +8,6 @@
     <string name="name">Название</string>
     <string name="adding_note">Добавление заметки</string>
     <string name="content">Содержание</string>
-    <string name="add_category">Добавить категорию</string>
     <string name="save">Сохранить</string>
     <string name="fill_all_fields">Заполните все поля</string>
     <string name="all_notes">Все заметки</string>
@@ -21,5 +20,7 @@
     <string name="categories">Категории</string>
     <string name="create_category">Создать категорию</string>
     <string name="choose_categories">Выберите категории</string>
+    <string name="to_choose_categories">Выбрать категории</string>
     <string name="no_created_categories">Нет созданных категорий</string>
+    <string name="without_categories">Вне категорий</string>
 </resources>

@@ -83,15 +83,23 @@ public class NoteDAO {
         noteValues.put(DBHelper.Note.COLUMN_NAME_CONTENT, note.getContent());
         noteValues.put(DBHelper.Note.COLUMN_NAME_CREATED_AT, note.getCreatedAtInMillis());
         long noteId = db.insert(DBHelper.Note.TABLE_NAME, null, noteValues);
-
-        // Закрепление категорий за данной заметкой
-        ContentValues categoryValues = new ContentValues();
-        for (Category category: note.getCategories()) {
-            categoryValues.put(DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID, noteId);
-            categoryValues.put(DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID, category.getId());
-            db.insert(DBHelper.NoteCategory.TABLE_NAME, null, categoryValues);
-        }
+        setNoteCategories(noteId, note.getCategories());
         return noteId;
+    }
+
+    private void setNoteCategories(long noteId, List<Category> categories) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        // Удалим все предыдущие категории этой заметки
+        db.delete(DBHelper.NoteCategory.TABLE_NAME, DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID +
+        "=?", new String[] {String.valueOf(noteId)});
+
+        // Добавим новые
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID, noteId);
+        for (Category category: categories) {
+            contentValues.put(DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID, category.getId());
+            db.insert(DBHelper.NoteCategory.TABLE_NAME, null, contentValues);
+        }
     }
 
 

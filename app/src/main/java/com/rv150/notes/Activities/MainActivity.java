@@ -113,7 +113,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_ADDING_NOTE && resultCode == RESULT_OK) {
+                mAllNotes = mNoteDAO.getAll();
+                updateRecyclerWithData(mAllNotes);
+        }
+    }
 
     @Override
     public void onBackPressed() {
@@ -285,7 +292,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void updateRecyclerWithData(List<Note> newData) {
-        mRecyclerAdapter = new RecyclerAdapter(newData);
+        mRecyclerAdapter = new RecyclerAdapter(newData, getApplicationContext());
         mRecyclerView.setAdapter(mRecyclerAdapter);
     }
 

@@ -1,6 +1,7 @@
 package com.rv150.notes.Activities;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -62,12 +63,17 @@ public class AddingActivity extends AppCompatActivity {
             return;
         }
 
-        /* Подхват категорий */
-
        Note note = new Note(name, content);
+       note.setCategories(mChoosenCategories);
        mNoteDAO.insertNote(note);
+
+       setResult(RESULT_OK);
        finish();
     }
+
+
+
+
 
     public void chooseCategories(View view) {
 
@@ -128,12 +134,12 @@ public class AddingActivity extends AppCompatActivity {
     private void updateCategoriesTextViews(List<Category> categories) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.categories_lin_layout);
         linearLayout.removeAllViews();
-        LinearLayout.LayoutParams llp = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
-        llp.setMargins(0, 0, 50, 0); // llp.setMargins(left, top, right, bottom);
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
+        params.setMargins(0, 0, 25, 0); // params.setMargins(left, top, right, bottom);
         for (Category category: categories) {
             TextView textView = new TextView(this);
             textView.setText(category.getName());
-            textView.setLayoutParams(llp);
+            textView.setLayoutParams(params);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 textView.setBackground(ContextCompat.getDrawable(this, R.drawable.textview_border));
             }

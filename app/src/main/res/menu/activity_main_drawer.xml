@@ -8,7 +8,7 @@
             android:title="@string/all_notes" />
         <item
             android:id="@+id/nav_add_category"
-            android:title="@string/add_category"
+            android:title="@string/create_category"
             />
         </menu>
     </item>
