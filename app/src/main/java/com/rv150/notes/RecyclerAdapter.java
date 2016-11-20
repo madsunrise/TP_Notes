@@ -51,7 +51,7 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
         final Note item = items.get(position);
         //viewHolder.itemView.setBackgroundColor(Color.WHITE);
         viewHolder.mName.setText(item.getName());
-        viewHolder.mCategories.setText("Категории: спорт, дача, отдых");
+        viewHolder.mCategories.setText("Категории");
     }
 
     @Override

@@ -61,9 +61,6 @@ public class MainActivity extends AppCompatActivity {
 
     private SharedPreferences mSharedPreferences;
 
-    // смещение идентификаторов для категорий внутри drawer,
-    // тк ID 0-3 заняты под стандартные опции
-    private static final int ID_OFFSET = 10;
 
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
 
@@ -286,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    
+
     private void updateRecyclerWithData(List<Note> newData) {
         mRecyclerAdapter = new RecyclerAdapter(newData);
         mRecyclerView.setAdapter(mRecyclerAdapter);

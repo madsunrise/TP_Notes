@@ -11,8 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:titleTextColor="@android:color/white"
-    android:background="?attr/colorPrimary"
-    android:layout_marginBottom="30dp">
+    android:background="?attr/colorPrimary">
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -24,37 +23,65 @@
             android:onClick="saveNote"/>
     </android.support.v7.widget.Toolbar>
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/input_note_name"
-            android:maxLength="40"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:hint="@string/name"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <android.support.design.widget.TextInputEditText
-            android:id="@+id/input_note_content"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/content"
-            android:inputType="textMultiLine"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <Button
-        android:text="@string/add_category"
-        android:layout_gravity="end"
-        android:textColor="@color/white"
-        android:layout_width="146dp"
         android:layout_height="wrap_content"
-        android:id="@+id/button2" />
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_note_name"
+                android:maxLength="40"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:hint="@string/name"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/input_note_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/content"
+                android:inputType="textMultiLine"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:id="@+id/categories_lin_layout">
+        </LinearLayout>
+
+
+
+
+
+
+
+        <Button
+            android:text="@string/add_category"
+            android:layout_gravity="end"
+            android:textColor="@color/white"
+            android:layout_width="146dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/button2"
+            android:onClick="chooseCategories"/>
+
+
+    </LinearLayout>
 
 </LinearLayout>
