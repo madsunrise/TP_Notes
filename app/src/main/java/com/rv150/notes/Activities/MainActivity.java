@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
         }
         category.setId(id);
 
-        addCategoryToDrawer(name);
+        addCategoryToDrawer(category);
 
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.category_was_created, Toast.LENGTH_SHORT);
@@ -258,15 +258,16 @@ public class MainActivity extends AppCompatActivity {
         // Добавление существующих категорий
         List<Category> categories = mCategoryDAO.getAll();
         for (Category category: categories) {
-            addCategoryToDrawer(category.getName());
+            addCategoryToDrawer(category);
         }
     }
 
-    private void addCategoryToDrawer(String name) {
+    private void addCategoryToDrawer(Category category) {
         long id = ID_GENERATOR.getAndIncrement();
         PrimaryDrawerItem newItem =  new PrimaryDrawerItem()
                 .withIdentifier(id)
-                .withName(name);
+                .withName(category.getName())
+                .withTag(category);     // в TAG сохраним связанную категорию
         // withIcon
 
         long idCreateCategory = mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, 0);
@@ -278,12 +279,24 @@ public class MainActivity extends AppCompatActivity {
 
     private void drawerPushed(IDrawerItem drawerItem) {
         long itemId = drawerItem.getIdentifier();
-        if (itemId == Constants.DRAWER_ID_CREATE_CATEGORY) {
+        if (itemId == mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, -1)) {
                 showCreateCategoryDialog();
-                return;
         }
-        if (itemId == Constants.DRAWER_ID_ALL_NOTES) {
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1)) {
+            setTitle(getString(R.string.all_notes));
             updateRecyclerWithData(mAllNotes);
+        }
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
+            //Intent intent = new Intent(this, Preferences.class);
+        }
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_FEEDBACK, -1)) {
+            // feedback
+        }
+        else {      // Фильтруем заметки по категории
+            Category category = (Category) drawerItem.getTag();
+            final List<Note> notes = mNoteDAO.getFromCategory(category.getId());
+            updateRecyclerWithData(notes);
+            setTitle(category.getName());
         }
         drawer.closeDrawer();
     }
