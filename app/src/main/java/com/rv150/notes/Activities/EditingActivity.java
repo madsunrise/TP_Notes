@@ -29,14 +29,17 @@ import java.util.List;
  * Created by Rudnev on 16.11.2016.
  */
 
-public class AddingActivity extends AppCompatActivity {
+public class EditingActivity extends AppCompatActivity {
     private EditText mName;
     private EditText mContent;
     private NoteDAO mNoteDAO;
-    private CategoryDAO mCategoryDAO;
 
     private List<Category> mChoosenCategories = new ArrayList<>();
     private List<Category> mAllCategories;
+
+    // Флаг, означающий добавляем мы заметку или изменяем существующую
+    private boolean isModifying = false;
+    private Note note;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +52,24 @@ public class AddingActivity extends AppCompatActivity {
         mContent = (EditText) findViewById(R.id.input_note_content);
 
         mNoteDAO = new NoteDAO(getApplicationContext());
-        mCategoryDAO = new CategoryDAO(getApplicationContext());
-        mAllCategories = mCategoryDAO.getAll();
+        CategoryDAO categoryDAO = new CategoryDAO(getApplicationContext());
+        mAllCategories = categoryDAO.getAll();
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            isModifying = true;
+            setTitle(R.string.modifying_note);
+            note = extras.getParcelable(Note.class.getSimpleName());
+            if (note != null) {
+                mChoosenCategories = note.getCategories();
+                updateCategoriesTextViews(mChoosenCategories);
+                mName.setText(note.getName());
+                mContent.setText(note.getContent());
+            }
+        }
+        else {
+            note = new Note();
+        }
     }
 
     public void saveNote(View view) {
@@ -63,12 +82,20 @@ public class AddingActivity extends AppCompatActivity {
             return;
         }
 
-       Note note = new Note(name, content);
-       note.setCategories(mChoosenCategories);
-       mNoteDAO.insertNote(note);
+        note.setName(name);
+        note.setContent(content);
+        note.setCategories(mChoosenCategories);
 
-       setResult(RESULT_OK);
-       finish();
+        if (isModifying) {
+            mNoteDAO.updateNote(note);
+        }
+        else {
+            mNoteDAO.insertNote(note);
+        }
+
+
+        setResult(RESULT_OK);
+        finish();
     }
 
 
