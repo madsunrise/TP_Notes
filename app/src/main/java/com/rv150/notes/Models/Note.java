@@ -1,15 +1,17 @@
 package com.rv150.notes.Models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 /**
  * Created by Rudnev on 17.11.2016.
  */
 
-public class Note {
+public class Note implements Parcelable {
     private String mName;
     private String mContent;
     private Calendar mCreatedAt;
@@ -29,8 +31,44 @@ public class Note {
     public Note(String name, String content, long createdAt) {
         this.mName = name;
         this.mContent = content;
-        this.mCreatedAt = new GregorianCalendar();
+        this.mCreatedAt = Calendar.getInstance();
         this.mCreatedAt.setTimeInMillis(createdAt);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(mName);
+        parcel.writeString(mContent);
+        parcel.writeLong(mCreatedAt.getTimeInMillis());
+        parcel.writeLong(mID);
+        parcel.writeTypedList(mCategories);
+    }
+
+    public static final Parcelable.Creator<Note> CREATOR
+            = new Parcelable.Creator<Note>() {
+        public Note createFromParcel(Parcel in) {
+            return new Note(in);
+        }
+
+        public Note[] newArray(int size) {
+            return new Note[size];
+        }
+    };
+
+    private Note(Parcel in) {
+        mName = in.readString();
+        mContent = in.readString();
+        long createdAt = in.readLong();
+        mCreatedAt = Calendar.getInstance();
+        mCreatedAt.setTimeInMillis(createdAt);
+        mID = in.readLong();
+        mCategories = new ArrayList<>();
+        in.readTypedList(mCategories, Category.CREATOR);
     }
 
     public String getName() {

@@ -23,4 +23,5 @@
     <string name="to_choose_categories">Выбрать категории</string>
     <string name="no_created_categories">Нет созданных категорий</string>
     <string name="without_categories">Вне категорий</string>
+    <string name="viewing_note">Просмотр заметки</string>
 </resources>

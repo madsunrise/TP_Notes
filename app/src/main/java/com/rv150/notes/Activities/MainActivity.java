@@ -45,6 +45,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.rv150.notes.Constants.RC_ADDING_NOTE;
+import static com.rv150.notes.Constants.RC_VIEWING_NOTE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -337,7 +338,10 @@ public class MainActivity extends AppCompatActivity {
         ItemClickSupport.addTo(mRecyclerView).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
             public void onItemClicked(RecyclerView recyclerView, int pos, View v) {
-
+                Note note = mRecyclerAdapter.getItemAtPosition(pos);
+                Intent intent = new Intent(getApplicationContext(), ViewingActivity.class);
+                intent.putExtra(Note.class.getSimpleName(), note);
+                startActivityForResult(intent, RC_VIEWING_NOTE);
             }
         });
     }

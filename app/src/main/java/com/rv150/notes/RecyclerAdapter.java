@@ -93,4 +93,8 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
     public int getItemCount() {
         return mItems.size();
     }
+
+    public Note getItemAtPosition (int pos) {
+        return mItems.get(pos);
+    }
 }
