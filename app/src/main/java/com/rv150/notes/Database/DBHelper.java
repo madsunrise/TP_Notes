@@ -60,7 +60,15 @@ public class DBHelper extends SQLiteOpenHelper {
                     Category.TABLE_NAME + "(" + Category._ID + ") ON DELETE CASCADE)";
 
 
-    public DBHelper(Context context) {
+    private static DBHelper instance;
+    public static DBHelper getInstance(Context context) {
+        if (instance == null) {
+            instance = new DBHelper(context);
+        }
+        return instance;
+    }
+
+    private DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

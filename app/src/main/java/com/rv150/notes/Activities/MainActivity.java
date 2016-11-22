@@ -11,6 +11,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DividerItemDecoration;
@@ -46,6 +47,8 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static com.rv150.notes.Constants.RC_ADDING_NOTE;
 import static com.rv150.notes.Constants.RC_VIEWING_NOTE;
+import static com.rv150.notes.Constants.RESULT_MODIFIED;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -78,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         mFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), AddingActivity.class);
+                Intent intent = new Intent(getApplicationContext(), EditingActivity.class);
                 startActivityForResult(intent, RC_ADDING_NOTE);
             }
         });
@@ -120,6 +123,10 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RC_ADDING_NOTE && resultCode == RESULT_OK) {
                 mAllNotes = mNoteDAO.getAll();
                 updateRecyclerWithData(mAllNotes);
+        }
+        if (requestCode == RC_VIEWING_NOTE && resultCode == RESULT_MODIFIED) {
+            mAllNotes = mNoteDAO.getAll();
+            updateRecyclerWithData(mAllNotes);
         }
     }
 
@@ -349,6 +356,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
     private void setUpItemTouchHelper() {
 
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
@@ -383,19 +391,27 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onSwiped(RecyclerView.ViewHolder viewHolder, int swipeDir) {
-                        //position = viewHolder.getAdapterPosition();
-                        //deleteItem();
-//                        View parentLayout = findViewById(R.id.mRecyclerView);
-//                        Snackbar snackbar = Snackbar
-//                                .make(parentLayout, R.string.product_has_been_deleted, Snackbar.LENGTH_LONG)
-//                                .setAction(R.string.undo, new View.OnClickListener() {
-//                                    @Override
-//                                    public void onClick(View view) {
-//                                        restoreItem();
-//                                    }
-//                                });
-//
-//                        snackbar.show();
+                        final int pos = viewHolder.getAdapterPosition();
+                        final Note note = mRecyclerAdapter.getItemAtPosition(pos);
+                        // Удаляем из RecyclerView
+                        mRecyclerAdapter.removeItemAtPosition(pos);
+                        // И из базы
+                        mNoteDAO.deleteNote(note.getId());
+
+                        View parentLayout = findViewById(R.id.recycler_view_main);
+                        Snackbar snackbar = Snackbar
+                                .make(parentLayout, R.string.note_has_been_deleted, Snackbar.LENGTH_LONG)
+                                .setAction(R.string.undo, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        // Откат
+                                        long id = mNoteDAO.insertNote(note);
+                                        note.setId(id);
+                                        mRecyclerAdapter.addItem(note, pos);
+                                    }
+                                });
+
+                        snackbar.show();
                     }
 
                     @Override

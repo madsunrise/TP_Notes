@@ -18,6 +18,10 @@ public class Note implements Parcelable {
     private long mID;
     private List<Category> mCategories = new ArrayList<>();
 
+    public Note() {
+        this (null,null);
+    }
+
     public Note (String name, String content) {
         this(name, content, Calendar.getInstance());
     }

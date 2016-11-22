@@ -24,4 +24,8 @@
     <string name="no_created_categories">Нет созданных категорий</string>
     <string name="without_categories">Вне категорий</string>
     <string name="viewing_note">Просмотр заметки</string>
+    <string name="modifying_note">Изменение заметки</string>
+    <string name="note_was_updated">Заметка была обновлена</string>
+    <string name="note_has_been_deleted">Заметка удалена</string>
+    <string name="undo">Отменить</string>
 </resources>

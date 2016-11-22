@@ -19,7 +19,7 @@ public class CategoryDAO {
     private DBHelper mDBHelper;
 
     public CategoryDAO(Context context) {
-        mDBHelper = new DBHelper(context);
+        mDBHelper = DBHelper.getInstance(context);
     }
 
     public List<Category> getAll() {

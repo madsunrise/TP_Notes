@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.rv150.notes.Database.DBHelper;
 import com.rv150.notes.Models.Category;
@@ -21,13 +22,14 @@ public class NoteDAO {
     private CategoryDAO mCategoryDAO;
 
     public NoteDAO(Context context) {
-        mDBHelper = new DBHelper(context);
+        mDBHelper = DBHelper.getInstance(context);
         mCategoryDAO = new CategoryDAO(context);
     }
 
     public List<Note> getAll() {
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
-        String query = "SELECT * FROM " + DBHelper.Note.TABLE_NAME;
+        String query = "SELECT * FROM " + DBHelper.Note.TABLE_NAME +
+                " ORDER BY " + DBHelper.Note.COLUMN_NAME_CREATED_AT;
         Cursor cursor = db.rawQuery(query, null);
         List<Note> notes = new ArrayList<>();
         while (cursor.moveToNext()) {
@@ -84,6 +86,7 @@ public class NoteDAO {
         noteValues.put(DBHelper.Note.COLUMN_NAME_CREATED_AT, note.getCreatedAtInMillis());
         long noteId = db.insert(DBHelper.Note.TABLE_NAME, null, noteValues);
         setNoteCategories(noteId, note.getCategories());
+        Log.i("DATABASE", "Note was inserted");
         return noteId;
     }
 
@@ -105,7 +108,8 @@ public class NoteDAO {
 
     public void deleteNote(long id) {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
+        int affRows = db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
+        Log.i("DATABASE", "Note was deleted, affected rows = " + affRows);
     }
 
     public void updateNote(Note note) {
@@ -115,6 +119,7 @@ public class NoteDAO {
         values.put(DBHelper.Note.COLUMN_NAME_CONTENT, note.getContent());
         db.update(DBHelper.Note.TABLE_NAME, values,
                 DBHelper.Note._ID + " = ?", new String[]{String.valueOf(note.getId())});
+        setNoteCategories(note.getId(), note.getCategories());
 
     }
 

@@ -88,13 +88,15 @@ public class EditingActivity extends AppCompatActivity {
 
         if (isModifying) {
             mNoteDAO.updateNote(note);
+            Intent intent = new Intent();
+            intent.putExtra(Note.class.getSimpleName(), note);
+            setResult(RESULT_OK, intent);
         }
         else {
             mNoteDAO.insertNote(note);
+            setResult(RESULT_OK);
         }
 
-
-        setResult(RESULT_OK);
         finish();
     }
 

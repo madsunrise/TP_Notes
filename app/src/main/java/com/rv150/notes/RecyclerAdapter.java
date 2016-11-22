@@ -54,7 +54,6 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
     @Override
     public void onBindViewHolder(RecyclerAdapter.ViewHolder viewHolder, int position) {
         final Note item = mItems.get(position);
-        //viewHolder.itemView.setBackgroundColor(Color.WHITE);
         viewHolder.mName.setText(item.getName());
 
         viewHolder.mCategories.removeAllViews();
@@ -97,4 +96,19 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
     public Note getItemAtPosition (int pos) {
         return mItems.get(pos);
     }
+
+    public void addItem(Note item) {
+        this.addItem(item, mItems.size());
+    }
+
+    public void addItem(Note item, int pos) {
+        mItems.add(pos, item);
+        notifyItemInserted(pos);
+    }
+
+    public void removeItemAtPosition (int pos) {
+        mItems.remove(pos);
+        notifyItemRemoved(pos);
+    }
+
 }
