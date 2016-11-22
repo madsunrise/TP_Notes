@@ -93,6 +93,11 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
         return mItems.size();
     }
 
+    public void setItems (List<Note> items) {
+        mItems = items;
+        notifyDataSetChanged();
+    }
+
     public Note getItemAtPosition (int pos) {
         return mItems.get(pos);
     }
@@ -109,6 +114,14 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
     public void removeItemAtPosition (int pos) {
         mItems.remove(pos);
         notifyItemRemoved(pos);
+    }
+
+    public void updateItem (Note note) {
+        int pos = mItems.indexOf(note);
+        if (pos != -1) {
+            mItems.set(pos, note);
+            notifyItemChanged(pos);
+        }
     }
 
 }

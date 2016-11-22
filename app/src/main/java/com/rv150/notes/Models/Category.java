@@ -51,22 +51,20 @@ public class Category implements Parcelable {
     }
 
     @Override
-    public int hashCode() {
-        return Long.valueOf(mID).hashCode();
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Category category = (Category) o;
+
+        return mID == category.mID;
+
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null || !(other instanceof Category)) {
-            return false;
-        }
-        if (other == this) {
-            return true;
-        }
-        return this.mID == ((Category) other).mID;
+    public int hashCode() {
+        return (int) (mID ^ (mID >>> 32));
     }
-
-
 
     public void setId(long id) {
         this.mID = id;

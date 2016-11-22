@@ -24,7 +24,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -97,14 +99,10 @@ public class MainActivity extends AppCompatActivity {
         setUpRecyclerView();
 
 
-        mAllNotes = mNoteDAO.getAll();
-        updateRecyclerWithData(mAllNotes);  // показываем все заметки
+        mAllNotes = mNoteDAO.getAll();      // показываем все заметки
+        mRecyclerAdapter = new RecyclerAdapter(mAllNotes, getApplicationContext());
+        mRecyclerView.setAdapter(mRecyclerAdapter);
     }
-
-
-
-
-
 
 
 
@@ -112,21 +110,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-
-
     }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == RC_ADDING_NOTE && resultCode == RESULT_OK) {
-                mAllNotes = mNoteDAO.getAll();
-                updateRecyclerWithData(mAllNotes);
+        if (requestCode == RC_ADDING_NOTE && resultCode == RESULT_OK) { // добавили новую заметку
+            Bundle extras = data.getExtras();
+            Note note = extras.getParcelable(Note.class.getSimpleName());
+            if (note != null) {
+                mRecyclerAdapter.addItem(note);
+            }
         }
-        if (requestCode == RC_VIEWING_NOTE && resultCode == RESULT_MODIFIED) {
-            mAllNotes = mNoteDAO.getAll();
-            updateRecyclerWithData(mAllNotes);
+        if (requestCode == RC_VIEWING_NOTE && resultCode == RESULT_MODIFIED) { // изменили существующую
+            Bundle extras = data.getExtras();
+            Note note = extras.getParcelable(Note.class.getSimpleName());
+            if (note != null) {
+                mRecyclerAdapter.updateItem(note);
+            }
         }
     }
 
@@ -164,8 +166,8 @@ public class MainActivity extends AppCompatActivity {
 
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
 
-        builder.setView(input, 70, 0, 100, 0);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
@@ -292,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1)) {
             setTitle(getString(R.string.all_notes));
-            updateRecyclerWithData(mAllNotes);
+            mRecyclerAdapter.setItems(mAllNotes);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
             //Intent intent = new Intent(this, Preferences.class);
@@ -302,20 +304,14 @@ public class MainActivity extends AppCompatActivity {
         }
         else {      // Фильтруем заметки по категории
             Category category = (Category) drawerItem.getTag();
-            final List<Note> notes = mNoteDAO.getFromCategory(category.getId());
-            updateRecyclerWithData(notes);
+            final List<Note> filtered = mNoteDAO.getFromCategory(category.getId());
+            mRecyclerAdapter.setItems(filtered);
             setTitle(category.getName());
         }
         drawer.closeDrawer();
     }
 
 
-
-
-    private void updateRecyclerWithData(List<Note> newData) {
-        mRecyclerAdapter = new RecyclerAdapter(newData, getApplicationContext());
-        mRecyclerView.setAdapter(mRecyclerAdapter);
-    }
 
 
 

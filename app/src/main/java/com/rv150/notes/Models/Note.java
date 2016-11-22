@@ -75,6 +75,22 @@ public class Note implements Parcelable {
         in.readTypedList(mCategories, Category.CREATOR);
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Note note = (Note) o;
+        return mID == note.mID;
+    }
+
+    @Override
+    public int hashCode() {
+        return (int) (mID ^ (mID >>> 32));
+    }
+
+
     public String getName() {
         return mName;
     }

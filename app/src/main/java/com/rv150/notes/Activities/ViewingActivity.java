@@ -83,10 +83,12 @@ public class ViewingActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         if (wasModified) {
-            setResult(RESULT_MODIFIED);
+            Intent intent = new Intent();   // Передаем измененную заметку
+            intent.putExtra(Note.class.getSimpleName(), note);
+            setResult(RESULT_MODIFIED, intent);
         }
         else {
-            setResult(RESULT_OK);
+            setResult(RESULT_CANCELED);
         }
         finish();
     }

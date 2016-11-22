@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.rv150.notes.Database.DAO.CategoryDAO;
 import com.rv150.notes.Database.DAO.NoteDAO;
 import com.rv150.notes.Models.Category;
@@ -44,7 +43,7 @@ public class EditingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_adding_note);
+        setContentView(R.layout.activity_editing_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_adding);
         setSupportActionBar(toolbar);
 
@@ -86,15 +85,16 @@ public class EditingActivity extends AppCompatActivity {
         note.setContent(content);
         note.setCategories(mChoosenCategories);
 
+        Intent intent = new Intent();
+        intent.putExtra(Note.class.getSimpleName(), note);
+        setResult(RESULT_OK, intent);
+
+        // Сохраняем в базе
         if (isModifying) {
             mNoteDAO.updateNote(note);
-            Intent intent = new Intent();
-            intent.putExtra(Note.class.getSimpleName(), note);
-            setResult(RESULT_OK, intent);
         }
         else {
             mNoteDAO.insertNote(note);
-            setResult(RESULT_OK);
         }
 
         finish();
