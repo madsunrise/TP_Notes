@@ -106,7 +106,7 @@ public class NoteDAO {
     }
 
 
-    public void deleteNote(long id) {
+    public void removeNote(long id) {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         int affRows = db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
         Log.i("DATABASE", "Note was deleted, affected rows = " + affRows);

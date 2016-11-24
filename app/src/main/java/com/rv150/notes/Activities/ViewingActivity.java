@@ -1,18 +1,22 @@
 package com.rv150.notes.Activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.rv150.notes.Database.DAO.NoteDAO;
 import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
@@ -22,6 +26,7 @@ import java.util.List;
 
 import static com.rv150.notes.Constants.RC_MODIFYING_NOTE;
 import static com.rv150.notes.Constants.RESULT_MODIFIED;
+import static com.rv150.notes.Constants.RESULT_REMOVED;
 
 /**
  * Created by Rudnev on 21.11.2016.
@@ -94,6 +99,58 @@ public class ViewingActivity extends AppCompatActivity {
         }
         finish();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.activity_viewing_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_send) {
+            Intent intent = new Intent();
+            intent.setAction(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_SUBJECT, mName.getText().toString());
+            intent.putExtra(Intent.EXTRA_TEXT, mContent.getText().toString());
+            intent.setType("text/plain");
+            startActivity(intent);
+            return true;
+        }
+        if (id == R.id.action_remove) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.warning)
+                    .setMessage(R.string.sure_you_want_to_delete_note)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            removeNote();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                    .show();
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void removeNote() {
+        NoteDAO noteDAO = new NoteDAO(this);
+        noteDAO.removeNote(note.getId());
+        
+        Intent intent = new Intent();
+        intent.putExtra(Note.class.getSimpleName(), note);
+        setResult(RESULT_REMOVED, intent);
+        finish();
+    }
+
 
     private void updateCategoriesTextViews(List<Category> categories) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.note_categories);

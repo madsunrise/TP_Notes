@@ -29,4 +29,9 @@
     <string name="note_has_been_deleted">Заметка удалена</string>
     <string name="undo">Отменить</string>
     <string name="no_notes_main_list">Заметок нет. Вы можете добавить их, нажав круглую кнопку внизу экрана.</string>
+    <string name="send">Отправить</string>
+    <string name="remove">Удалить</string>
+    <string name="sure_you_want_to_delete_note">Вы действительно хотите удалить эту заметку?</string>
+    <string name="warning">Внимание</string>
+    <string name="note_was_removed">Заметка удалена</string>
 </resources>

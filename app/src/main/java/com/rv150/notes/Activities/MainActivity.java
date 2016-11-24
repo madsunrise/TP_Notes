@@ -24,9 +24,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
@@ -52,6 +50,7 @@ import static com.rv150.notes.Constants.RC_ADDING_NOTE;
 import static com.rv150.notes.Constants.RC_SETTINGS;
 import static com.rv150.notes.Constants.RC_VIEWING_NOTE;
 import static com.rv150.notes.Constants.RESULT_MODIFIED;
+import static com.rv150.notes.Constants.RESULT_REMOVED;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -131,11 +130,23 @@ public class MainActivity extends AppCompatActivity {
                 mRecyclerAdapter.addItem(note);
             }
         }
-        if (requestCode == RC_VIEWING_NOTE && resultCode == RESULT_MODIFIED) { // изменили существующую
-            Bundle extras = data.getExtras();
-            Note note = extras.getParcelable(Note.class.getSimpleName());
-            if (note != null) {
-                mRecyclerAdapter.updateItem(note);
+        if (requestCode == RC_VIEWING_NOTE) {
+            if (resultCode == RESULT_MODIFIED) { // изменили существующую
+                Bundle extras = data.getExtras();
+                Note note = extras.getParcelable(Note.class.getSimpleName());
+                if (note != null) {
+                    mRecyclerAdapter.updateItem(note);
+                }
+            }
+            else if (resultCode == RESULT_REMOVED) {
+                Bundle extras = data.getExtras();
+                Note note = extras.getParcelable(Note.class.getSimpleName());
+                if (note != null) {
+                    mRecyclerAdapter.removeItem(note);
+                }
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        R.string.note_was_removed, Toast.LENGTH_SHORT);
+                toast.show();
             }
         }
     }
@@ -152,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         return true;
     }
 
@@ -403,7 +414,7 @@ public class MainActivity extends AppCompatActivity {
                         // Удаляем из RecyclerView
                         mRecyclerAdapter.removeItemAtPosition(pos);
                         // И из базы
-                        mNoteDAO.deleteNote(note.getId());
+                        mNoteDAO.removeNote(note.getId());
 
                         View parentLayout = findViewById(R.id.recycler_view_main);
                         Snackbar snackbar = Snackbar
