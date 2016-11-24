@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
+import com.rv150.notes.Utils;
 
 import java.util.List;
 
@@ -37,6 +38,7 @@ public class ViewingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_viewing_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_viewing);
         setSupportActionBar(toolbar);

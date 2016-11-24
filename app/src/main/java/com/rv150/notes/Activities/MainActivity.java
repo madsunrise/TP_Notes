@@ -43,11 +43,13 @@ import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
 import com.rv150.notes.RecyclerAdapter;
 import com.rv150.notes.Constants;
+import com.rv150.notes.Utils;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.rv150.notes.Constants.RC_ADDING_NOTE;
+import static com.rv150.notes.Constants.RC_SETTINGS;
 import static com.rv150.notes.Constants.RC_VIEWING_NOTE;
 import static com.rv150.notes.Constants.RESULT_MODIFIED;
 
@@ -66,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
     private CategoryDAO mCategoryDAO;
 
     private SharedPreferences mSharedPreferences;
+    private int mTheme;
 
 
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
@@ -73,6 +76,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.onActivityCreateSetTheme(this);
+        mTheme = Utils.getTheme();
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -109,7 +114,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
+        int theme = Utils.getTheme();
+        if (mTheme != theme) {
+            recreate();
+        }
     }
 
 
@@ -152,6 +160,8 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivityForResult(intent, RC_SETTINGS);
             return true;
         }
 
@@ -297,7 +307,8 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerAdapter.setItems(mAllNotes);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
-            //Intent intent = new Intent(this, Preferences.class);
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_FEEDBACK, -1)) {
             // feedback

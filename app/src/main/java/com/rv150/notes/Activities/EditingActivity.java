@@ -20,6 +20,7 @@ import com.rv150.notes.Database.DAO.NoteDAO;
 import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
+import com.rv150.notes.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,7 @@ public class EditingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Utils.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_editing_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_adding);
         setSupportActionBar(toolbar);
