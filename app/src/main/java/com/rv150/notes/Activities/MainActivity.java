@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -19,14 +20,21 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.OnColorSelectedListener;
+import com.flask.colorpicker.builder.ColorPickerClickListener;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.DividerDrawerItem;
@@ -54,6 +62,7 @@ import static com.rv150.notes.Constants.RESULT_REMOVED;
 
 
 public class MainActivity extends AppCompatActivity {
+    private final static String TAG = "MainActivity";
 
     private RecyclerView mRecyclerView;
     private FloatingActionButton mFab;
@@ -67,7 +76,9 @@ public class MainActivity extends AppCompatActivity {
     private CategoryDAO mCategoryDAO;
 
     private SharedPreferences mSharedPreferences;
+
     private int mTheme;
+    private int currentThemeColor;
 
 
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
@@ -103,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         setUpRecyclerView();
 
 
-        mAllNotes = mNoteDAO.getAll();      // показываем все заметки
+        mAllNotes = mNoteDAO.getAll();      // показываем все заметки при запуске
         mRecyclerAdapter = new RecyclerAdapter(mAllNotes, getApplicationContext());
         mRecyclerView.setAdapter(mRecyclerAdapter);
     }
@@ -136,13 +147,15 @@ public class MainActivity extends AppCompatActivity {
                 Note note = extras.getParcelable(Note.class.getSimpleName());
                 if (note != null) {
                     mRecyclerAdapter.updateItem(note);
+                    Log.i(TAG, "Note was updated");
                 }
             }
-            else if (resultCode == RESULT_REMOVED) {
+            else if (resultCode == RESULT_REMOVED) {    // удалили
                 Bundle extras = data.getExtras();
                 Note note = extras.getParcelable(Note.class.getSimpleName());
                 if (note != null) {
                     mRecyclerAdapter.removeItem(note);
+                    Log.i(TAG, "Note was removed");
                 }
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.note_was_removed, Toast.LENGTH_SHORT);
@@ -182,23 +195,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void showCreateCategoryDialog() {
+        currentThemeColor = -1; // Белый цвет по умолчанию для категории
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.creating_category);
 
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        builder.setView(input);
-
+        final View dialogView = getLayoutInflater().inflate(R.layout.category_add_dialog, null);
+        builder.setView(dialogView);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String result = input.getText().toString();
+                EditText inputName = (EditText) dialogView.findViewById(R.id.input_category_name);
+                String result = inputName.getText().toString();
                 if (result.isEmpty()) {
                     Toast toast = Toast.makeText(getApplicationContext(),
                             R.string.field_is_empty, Toast.LENGTH_SHORT);
                     toast.show();
-                    showCreateCategoryDialog(); // Вызываем заново
+                    showCreateCategoryDialog(); // Вызываем диалог заново
                 }
                 else {
                     result = result.substring(0, 1).toUpperCase() + result.substring(1);
@@ -213,10 +227,12 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         builder.show();
+
     }
 
     private void createCategory(String name) {
         Category category = new Category(name);
+        category.setColor(currentThemeColor);
         long id;
         try {
             id = mCategoryDAO.insertCategory(category);
@@ -234,6 +250,34 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.category_was_created, Toast.LENGTH_SHORT);
         toast.show();
+        Log.i(TAG, "Category was created");
+    }
+
+    public void openColorPicker(View view) {
+        ColorPickerDialogBuilder
+                .with(this)
+                .setTitle("Choose color")
+                .initialColor(currentThemeColor)
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .density(12)
+                .setOnColorSelectedListener(new OnColorSelectedListener() {
+                    @Override
+                    public void onColorSelected(int selectedColor) {
+                    }
+                })
+                .setPositiveButton(R.string.ok, new ColorPickerClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
+                        currentThemeColor = selectedColor;
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .build()
+                .show();
     }
 
 
@@ -245,16 +289,13 @@ public class MainActivity extends AppCompatActivity {
         editor.putLong(Constants.ID_ALL_NOTES, idAllNotes);
         PrimaryDrawerItem allNotes = new PrimaryDrawerItem()
                 .withIdentifier(idAllNotes)
-                .withName(R.string.all_notes)
-                // withIcon
-                ;
+                .withName(R.string.all_notes);
 
         long idCreateCategory = ID_GENERATOR.getAndIncrement();
         editor.putLong(Constants.ID_CREATE_CATEGORY, idCreateCategory);
         SecondaryDrawerItem createCategory = new SecondaryDrawerItem()
                 .withIdentifier(idCreateCategory)
                 .withName(R.string.create_category)
-                // withIcon
                 .withSelectable(false);
 
 
@@ -295,11 +336,23 @@ public class MainActivity extends AppCompatActivity {
 
     private void addCategoryToDrawer(Category category) {
         long id = ID_GENERATOR.getAndIncrement();
+
+        Drawable original = ContextCompat.getDrawable(this, R.drawable.circle);
+        Drawable.ConstantState constantState = original.getConstantState();
+        if (constantState == null) {
+            Log.wtf(TAG, "Drawable.ConstantState is null");
+            return;
+        }
+        Drawable icon = original.getConstantState().newDrawable();
+        icon.mutate();
+        icon.setColorFilter(category.getColor(), PorterDuff.Mode.MULTIPLY);
+
         PrimaryDrawerItem newItem =  new PrimaryDrawerItem()
                 .withIdentifier(id)
                 .withName(category.getName())
-                .withTag(category);     // в TAG сохраним связанную категорию
-        // withIcon
+                .withTag(category)     // в TAG сохраним связанную категорию
+                .withIcon(icon);
+
 
         long idCreateCategory = mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, 0);
         int position = drawer.getPosition(idCreateCategory); // получаем позицию "Создать категорию"
@@ -329,6 +382,7 @@ public class MainActivity extends AppCompatActivity {
             final List<Note> filtered = mNoteDAO.getFromCategory(category.getId());
             mRecyclerAdapter.setItems(filtered);
             setTitle(category.getName());
+
         }
         drawer.closeDrawer();
     }

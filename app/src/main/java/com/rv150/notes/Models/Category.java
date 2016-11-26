@@ -13,14 +13,20 @@ import java.util.Calendar;
 public class Category implements Parcelable {
     private long mID;
     private String mName;
+    private int color;
 
     public Category(String name) {
-        this.mName = name;
+        this(name, -1, -1);
     }
 
     public Category(String name, long id) {
+        this(name, id, -1);
+    }
+
+    public Category(String name, long id, int color) {
         this.mName = name;
         this.mID = id;
+        this.color = color;
     }
 
     @Override
@@ -80,5 +86,13 @@ public class Category implements Parcelable {
 
     public String getName() {
         return mName;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }

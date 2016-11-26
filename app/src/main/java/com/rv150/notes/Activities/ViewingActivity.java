@@ -144,7 +144,7 @@ public class ViewingActivity extends AppCompatActivity {
     private void removeNote() {
         NoteDAO noteDAO = new NoteDAO(this);
         noteDAO.removeNote(note.getId());
-        
+
         Intent intent = new Intent();
         intent.putExtra(Note.class.getSimpleName(), note);
         setResult(RESULT_REMOVED, intent);

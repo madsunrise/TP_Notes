@@ -34,4 +34,5 @@
     <string name="sure_you_want_to_delete_note">Вы действительно хотите удалить эту заметку?</string>
     <string name="warning">Внимание</string>
     <string name="note_was_removed">Заметка удалена</string>
+    <string name="choose_color">Выбрать цвет</string>
 </resources>

@@ -21,6 +21,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public static class Category implements BaseColumns {
         public static final String TABLE_NAME = "category";
         public static final String COLUMN_NAME_NAME = "name";
+        public static final String COLUMN_NAME_COLOR = "color";
     }
 
     public static class NoteCategory implements BaseColumns {
@@ -44,7 +45,8 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_CATEGORY_TABLE  =
             "CREATE TABLE " + Category.TABLE_NAME + " (" +
                     Category._ID + " INTEGER PRIMARY KEY," +
-                    Category.COLUMN_NAME_NAME + " VARCHAR(30) UNIQUE NOT NULL)";
+                    Category.COLUMN_NAME_NAME + " VARCHAR(30) UNIQUE NOT NULL," +
+                    Category.COLUMN_NAME_COLOR + " INTEGER NOT NULL)";
 
     // Table for many-to-many relationship
     private static final String SQL_CREATE_NOTE_CATEGORY_TABLE  =

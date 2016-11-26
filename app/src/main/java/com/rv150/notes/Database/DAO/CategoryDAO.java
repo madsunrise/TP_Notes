@@ -39,13 +39,11 @@ public class CategoryDAO {
     public List<Category> getNoteCategories (long noteId) {
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
         String CATEGORY_TABLE = DBHelper.Category.TABLE_NAME;
-        String CATEGORY_NAME = DBHelper.Category.COLUMN_NAME_NAME;
         String CATEGORY_ID = DBHelper.Category._ID;
         String NOTE_CATEGORY_TABLE = DBHelper.NoteCategory.TABLE_NAME;
         String NOTE_CATEGORY_CATEGORY_ID = DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID;
         String NOTE_CATEGORY_NOTE_ID = DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID;
-        String query = "SELECT " + CATEGORY_TABLE + '.' + CATEGORY_NAME + ',' +
-               CATEGORY_TABLE + '.' + CATEGORY_ID + " FROM " + CATEGORY_TABLE +
+        String query = "SELECT * FROM " + CATEGORY_TABLE +
                 " JOIN " + NOTE_CATEGORY_TABLE + " ON " +
                 CATEGORY_TABLE + '.' + CATEGORY_ID + '=' +
                 NOTE_CATEGORY_TABLE + '.' + NOTE_CATEGORY_CATEGORY_ID +
@@ -65,6 +63,7 @@ public class CategoryDAO {
             SQLiteDatabase db = mDBHelper.getWritableDatabase();
             ContentValues contentValues = new ContentValues();
             contentValues.put(DBHelper.Category.COLUMN_NAME_NAME, category.getName());
+            contentValues.put(DBHelper.Category.COLUMN_NAME_COLOR, category.getColor());
             return db.insert(DBHelper.Category.TABLE_NAME, null, contentValues);
     }
 
@@ -72,9 +71,13 @@ public class CategoryDAO {
     private Category mapCategory(Cursor cursor) {
         String name = cursor.getString(
                 cursor.getColumnIndexOrThrow(DBHelper.Category.COLUMN_NAME_NAME));
+
+        int color = cursor.getInt(
+                cursor.getColumnIndexOrThrow(DBHelper.Category.COLUMN_NAME_COLOR));
+
         long id = cursor.getLong(
                 cursor.getColumnIndexOrThrow(DBHelper.Category._ID));
 
-        return new Category(name, id);
+        return new Category(name, id, color);
     }
 }
