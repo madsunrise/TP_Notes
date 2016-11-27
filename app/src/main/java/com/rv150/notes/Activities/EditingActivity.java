@@ -205,16 +205,14 @@ public class EditingActivity extends AppCompatActivity {
                 .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                R.string.adding_note, Toast.LENGTH_SHORT);
-                        toast.show();
+                        View view1 = getLayoutInflater().inflate(R.layout.categories_dialog_item, null);
+                        CheckBox checkBox = (CheckBox) view1.findViewById(R.id.checkbox);
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> adapterView) {
-                        Toast toast = Toast.makeText(getApplicationContext(),
-                                R.string.fill_all_fields, Toast.LENGTH_SHORT);
-                        toast.show();
+                        View view1 = getLayoutInflater().inflate(R.layout.categories_dialog_item, null);
+                        CheckBox checkBox = (CheckBox) view1.findViewById(R.id.checkbox);
                     }
                 });
 
