@@ -38,6 +38,7 @@ public class Category implements Parcelable {
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(mName);
         parcel.writeLong(mID);
+        parcel.writeInt(color);
     }
 
     public static final Parcelable.Creator<Category> CREATOR
@@ -54,6 +55,7 @@ public class Category implements Parcelable {
     private Category(Parcel in) {
         mName = in.readString();
         mID = in.readLong();
+        color = in.readInt();
     }
 
     @Override

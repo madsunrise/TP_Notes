@@ -1,10 +1,12 @@
 package com.rv150.notes.Activities;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -12,12 +14,15 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.CheckedTextView;
 import android.widget.CompoundButton;
@@ -39,6 +44,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.widget.AbsListView.CHOICE_MODE_MULTIPLE;
+
 /**
  * Created by Rudnev on 16.11.2016.
  */
@@ -48,7 +55,7 @@ public class EditingActivity extends AppCompatActivity {
     private EditText mContent;
     private NoteDAO mNoteDAO;
 
-    private List<Category> mChoosenCategories = new ArrayList<>();
+    private List<Category> mChoosenCategories;
     private List<Category> mAllCategories;
 
     // Флаг, означающий добавляем мы заметку или изменяем существующую
@@ -81,8 +88,7 @@ public class EditingActivity extends AppCompatActivity {
                 mName.setText(note.getName());
                 mContent.setText(note.getContent());
             }
-        }
-        else {
+        } else {
             note = new Note();
         }
     }
@@ -108,8 +114,7 @@ public class EditingActivity extends AppCompatActivity {
         // Сохраняем в базе
         if (isModifying) {
             mNoteDAO.updateNote(note);
-        }
-        else {
+        } else {
             mNoteDAO.insertNote(note);
         }
 
@@ -117,11 +122,7 @@ public class EditingActivity extends AppCompatActivity {
     }
 
 
-
-
-
     public void chooseCategories(View view) {
-
         if (mAllCategories.isEmpty()) {
             Toast toast = Toast.makeText(getApplicationContext(),
                     R.string.no_created_categories, Toast.LENGTH_SHORT);
@@ -129,64 +130,23 @@ public class EditingActivity extends AppCompatActivity {
             return;
         }
 
-        final int size = mAllCategories.size();
-        // Получаем список имен для категорий
-        String [] existingCatNames = new String[size];
-        for (int i = 0; i < size; ++i) {
-            existingCatNames[i] = mAllCategories.get(i).getName();
-        }
-
-        // Отмечаем категории, которые могли быть отмечены ранее
-        final boolean [] selectedItems = new boolean[size];
-        for (int i = 0; i < size; ++i) {
-            Category category = mAllCategories.get(i);
-            if (mChoosenCategories.contains(category)) {
-                selectedItems[i] = true;
-            }
-        }
-
-//        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//        builder.setTitle(R.string.choose_categories)
-//                .setMultiChoiceItems(existingCatNames,selectedItems, new DialogInterface.OnMultiChoiceClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i, boolean b) {
-//                    }
-//                })
-//                // Set the action buttons
-//                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        mChoosenCategories.clear();
-//                        for (int i = 0; i < size; ++i) {
-//                            if (selectedItems[i]) {
-//                                Category category = mAllCategories.get(i);
-//                                mChoosenCategories.add(category);
-//                            }
-//                        }
-//                        updateCategoriesTextViews(mChoosenCategories);
-//                    }
-//                })
-//                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        dialog.cancel();
-//                    }
-//                })
-//                .show();
-
-
         ListView listView = new ListView(this);
 
-
-        final CustomAdapter adapter = new CustomAdapter(this, R.layout.categories_dialog_item, R.id.item_name, mAllCategories);
+        final CustomAdapter adapter = new CustomAdapter(this, R.layout.categories_dialog_item, mAllCategories);
         adapter.setCheckedItems(mChoosenCategories);
 
         listView.setAdapter(adapter);
-        listView.setChoiceMode(ListView.CHOICE_MODE_MULTIPLE);
-        listView.setDivider(null);
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                final CheckedTextView checkedTextView = (CheckedTextView) view.findViewById(R.id.checkedTV);
+                boolean wasChecked = checkedTextView.isChecked();
+                checkedTextView.setChecked(!wasChecked);
+                adapter.setCheckedStatus(i, !wasChecked);
+            }
+        });
 
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this)
                 .setTitle(R.string.choose_categories)
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
@@ -195,43 +155,12 @@ public class EditingActivity extends AppCompatActivity {
                         updateCategoriesTextViews(mChoosenCategories);
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.cancel();
-                    }
-                })
+                .setNegativeButton(R.string.cancel, null)
                 .setView(listView)
-                .setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-                    @Override
-                    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                        View view1 = getLayoutInflater().inflate(R.layout.categories_dialog_item, null);
-                        CheckBox checkBox = (CheckBox) view1.findViewById(R.id.checkbox);
-                    }
-
-                    @Override
-                    public void onNothingSelected(AdapterView<?> adapterView) {
-                        View view1 = getLayoutInflater().inflate(R.layout.categories_dialog_item, null);
-                        CheckBox checkBox = (CheckBox) view1.findViewById(R.id.checkbox);
-                    }
-                });
-
-        View view1 = getLayoutInflater().inflate(R.layout.categories_dialog_item, null);
-        CheckBox checkBox = (CheckBox) view1.findViewById(R.id.checkbox);
-        checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-                                                @Override
-                                                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                                    Toast toast = Toast.makeText(getApplicationContext(),
-                                                            R.string.fill_all_fields, Toast.LENGTH_SHORT);
-                                                    toast.show();
-                                                }
-                                            }
-        );
-
-
-        builder.show();
+                .show();
     }
+
+
 
 
     private void updateCategoriesTextViews(List<Category> categories) {
@@ -243,11 +172,18 @@ public class EditingActivity extends AppCompatActivity {
             TextView textView = new TextView(this);
             textView.setText(category.getName());
             textView.setLayoutParams(params);
+
+
+            // Установим цвет обводки textView
+            int width = (int) getResources().getDimension(R.dimen.textview_border);
+            GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
+            drawable.setStroke(width, category.getColor());
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                textView.setBackground(ContextCompat.getDrawable(this, R.drawable.textview_border));
+                textView.setBackground(drawable);
             }
             else {
-                textView.setBackgroundDrawable(getResources().getDrawable(R.drawable.textview_border));
+                textView.setBackgroundDrawable(drawable);
             }
             linearLayout.addView(textView);
         }
@@ -259,11 +195,23 @@ public class EditingActivity extends AppCompatActivity {
         private boolean[] checkedPositions;
         private List<Category> mItems;
 
-        CustomAdapter(Context context, int resource,
-                              int textViewResourceId, List<Category> items) {
-            super(context, resource, textViewResourceId, items);
-            mItems = items;
-            checkedPositions = new boolean[items.size()];
+
+
+        CustomAdapter (Context context, int resource, List<Category> items) {
+            super(context, resource, items);
+            this.mItems = items;
+            checkedPositions = new boolean[mItems.size()];
+        }
+
+
+        void setCheckedItems (List<Category> checkedItems) {
+            if (checkedItems == null || checkedItems.isEmpty()) {
+                return;
+            }
+            for (int i = 0; i < mItems.size(); ++i) {
+                boolean check = checkedItems.contains(mItems.get(i));
+                checkedPositions[i] = check;
+            }
         }
 
         List<Category> getCheckedItems(){
@@ -276,10 +224,11 @@ public class EditingActivity extends AppCompatActivity {
             return checkedItems;
         }
 
-        void setCheckedItems (List<Category> checkedItems) {
-            for (int i = 0; i < mItems.size(); ++i) {
-                checkedPositions[i] = checkedItems.contains(mItems.get(i));
+        void setCheckedStatus (int position, boolean checked) {
+            if (position >= 0 && position < checkedPositions.length) {
+                checkedPositions[position] = checked;
             }
+
         }
 
 
@@ -291,14 +240,15 @@ public class EditingActivity extends AppCompatActivity {
             }
             Category item = mItems.get(position);
 
-            CheckBox checkBox = (CheckBox) convertView.findViewById(R.id.checkbox);
-            checkBox.setText(item.getName());
+            final CheckedTextView checkedTextView = (CheckedTextView) convertView.findViewById(R.id.checkedTV);
+            checkedTextView.setText(item.getName());
+            boolean isChecked = checkedPositions[position];
+            checkedTextView.setChecked(isChecked);
+
 
             ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
             imageView.setColorFilter(item.getColor(), PorterDuff.Mode.MULTIPLY);
 
-
-            checkedPositions[position] = checkBox.isChecked();
             return convertView;
         }
 

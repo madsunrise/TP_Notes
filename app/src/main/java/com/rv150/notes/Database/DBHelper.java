@@ -48,7 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     Category.COLUMN_NAME_NAME + " VARCHAR(30) UNIQUE NOT NULL," +
                     Category.COLUMN_NAME_COLOR + " INTEGER NOT NULL)";
 
-    // Table for many-to-many relationship
+    // Table for many-to-many relations
     private static final String SQL_CREATE_NOTE_CATEGORY_TABLE  =
             "CREATE TABLE " + NoteCategory.TABLE_NAME + " (" +
                     NoteCategory._ID + " INTEGER PRIMARY KEY," +

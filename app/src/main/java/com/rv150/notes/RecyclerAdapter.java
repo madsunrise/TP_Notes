@@ -1,6 +1,7 @@
 package com.rv150.notes;
 
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -65,10 +66,16 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
                 TextView textView = new TextView(mContext);
                 textView.setText(category.getName());
                 textView.setLayoutParams(params);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    textView.setBackground(ContextCompat.getDrawable(mContext, R.drawable.textview_border));
-                } else {
-                    textView.setBackgroundDrawable(mContext.getResources().getDrawable(R.drawable.textview_border));
+
+                int width = (int) mContext.getResources().getDimension(R.dimen.textview_border);
+                GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(mContext, R.drawable.textview_border);
+                drawable.setStroke(width, category.getColor());
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    textView.setBackground(drawable);
+                }
+                else {
+                    textView.setBackgroundDrawable(drawable);
                 }
                 viewHolder.mCategories.addView(textView);
             }

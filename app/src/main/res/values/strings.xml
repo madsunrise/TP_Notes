@@ -35,4 +35,5 @@
     <string name="warning">Внимание</string>
     <string name="note_was_removed">Заметка удалена</string>
     <string name="choose_color">Выбрать цвет</string>
+    <string name="category_icon_description">Цветная иконка категории</string>
 </resources>

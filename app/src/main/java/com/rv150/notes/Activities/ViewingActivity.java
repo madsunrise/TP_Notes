@@ -2,6 +2,7 @@ package com.rv150.notes.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
@@ -161,11 +162,17 @@ public class ViewingActivity extends AppCompatActivity {
             TextView textView = new TextView(this);
             textView.setText(category.getName());
             textView.setLayoutParams(params);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                textView.setBackground(ContextCompat.getDrawable(this, R.drawable.textview_border));
+
+            // Установим цвет обводки textView
+            int width = (int) getResources().getDimension(R.dimen.textview_border);
+            GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
+            drawable.setStroke(width, category.getColor());
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                textView.setBackground(drawable);
             }
             else {
-                textView.setBackgroundDrawable(getResources().getDrawable(R.drawable.textview_border));
+                textView.setBackgroundDrawable(drawable);
             }
             linearLayout.addView(textView);
         }

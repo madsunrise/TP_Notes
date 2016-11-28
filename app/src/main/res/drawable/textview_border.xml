@@ -4,5 +4,5 @@
     <corners android:radius="8dp" />
     <padding android:left="7dp" android:top="7dp"
         android:right="7dp" android:bottom="7dp" />
-    <stroke android:color="@color/colorAccent" android:width="2dp" />
+    <stroke android:color="@color/colorAccent" android:width="@dimen/textview_border" />
 </shape>

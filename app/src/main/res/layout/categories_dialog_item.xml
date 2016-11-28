@@ -1,26 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:id="@+id/categories_dialog_linlayout">
+    android:layout_height="wrap_content">
 
-
-
-    <CheckBox
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/checkbox"
+    <CheckedTextView
+        android:id="@+id/checkedTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="16sp" />
+        android:textSize="16sp"
+        android:drawableStart="?android:attr/listChoiceIndicatorMultiple"
+        android:drawableLeft="?android:attr/listChoiceIndicatorMultiple"/>
 
     <ImageView
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/circle"/>
-
-
-
-
-</LinearLayout>
+        android:src="@drawable/circle"
+        android:contentDescription="@string/category_icon_description"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+</RelativeLayout>
