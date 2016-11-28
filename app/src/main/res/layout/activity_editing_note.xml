@@ -10,8 +10,9 @@
     android:minHeight="?attr/actionBarSize"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:titleTextColor="@android:color/white"
-    android:background="?attr/colorPrimary">
+    android:background="?attr/colorPrimary"
+        app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -65,8 +66,6 @@
             android:layout_marginTop="10dp"
             android:id="@+id/categories_lin_layout">
         </LinearLayout>
-
-
 
 
 
