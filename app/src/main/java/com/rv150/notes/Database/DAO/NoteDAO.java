@@ -20,6 +20,7 @@ import java.util.List;
 public class NoteDAO {
     private DBHelper mDBHelper;
     private CategoryDAO mCategoryDAO;
+    private static final String TAG = "NodeDAO";
 
     public NoteDAO(Context context) {
         mDBHelper = DBHelper.getInstance(context);
@@ -39,6 +40,7 @@ public class NoteDAO {
             notes.add(note);
         }
         cursor.close();
+        Log.i(TAG, "Get all notes OK");
         return notes;
     }
 
@@ -74,6 +76,7 @@ public class NoteDAO {
             notes.add(note);
         }
         cursor.close();
+        Log.i(TAG, "Get notes from category OK");
         return notes;
     }
 
@@ -86,7 +89,7 @@ public class NoteDAO {
         noteValues.put(DBHelper.Note.COLUMN_NAME_CREATED_AT, note.getCreatedAtInMillis());
         long noteId = db.insert(DBHelper.Note.TABLE_NAME, null, noteValues);
         setNoteCategories(noteId, note.getCategories());
-        Log.i("DATABASE", "Note was inserted");
+        Log.i(TAG, "Note was inserted");
         return noteId;
     }
 
@@ -108,8 +111,8 @@ public class NoteDAO {
 
     public void removeNote(long id) {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        int affRows = db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
-        Log.i("DATABASE", "Note was deleted, affected rows = " + affRows);
+        db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
+        Log.i(TAG, "Note was removed");
     }
 
     public void updateNote(Note note) {
@@ -120,12 +123,13 @@ public class NoteDAO {
         db.update(DBHelper.Note.TABLE_NAME, values,
                 DBHelper.Note._ID + " = ?", new String[]{String.valueOf(note.getId())});
         setNoteCategories(note.getId(), note.getCategories());
-
+        Log.i(TAG, "Note was updated");
     }
 
     public void deleteAll() {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.delete(DBHelper.Note.TABLE_NAME, null, null);
+        Log.i(TAG, "All notes were removed");
     }
 
 

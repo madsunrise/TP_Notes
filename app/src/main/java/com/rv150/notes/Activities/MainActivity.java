@@ -20,6 +20,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.InputType;
+
 import android.util.Log;
 import android.view.View;
 import android.support.v7.app.AppCompatActivity;
@@ -147,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
                 Note note = extras.getParcelable(Note.class.getSimpleName());
                 if (note != null) {
                     mRecyclerAdapter.updateItem(note);
-                    Log.i(TAG, "Note was updated");
                 }
             }
             else if (resultCode == RESULT_REMOVED) {    // удалили
@@ -155,7 +155,6 @@ public class MainActivity extends AppCompatActivity {
                 Note note = extras.getParcelable(Note.class.getSimpleName());
                 if (note != null) {
                     mRecyclerAdapter.removeItem(note);
-                    Log.i(TAG, "Note was removed");
                 }
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.note_was_removed, Toast.LENGTH_SHORT);
@@ -184,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, SettingsActivity.class);
+            Intent intent = new Intent(this, PrefActivity.class);
             startActivityForResult(intent, RC_SETTINGS);
             return true;
         }
@@ -200,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(R.string.creating_category);
 
-        final View dialogView = getLayoutInflater().inflate(R.layout.category_add_dialog, null);
+        final View dialogView = View.inflate(this, R.layout.category_add_dialog, null);
         builder.setView(dialogView);
 
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -250,7 +249,6 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.category_was_created, Toast.LENGTH_SHORT);
         toast.show();
-        Log.i(TAG, "Category was created");
     }
 
     public void openColorPicker(View view) {

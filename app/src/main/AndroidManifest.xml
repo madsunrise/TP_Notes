@@ -30,7 +30,7 @@
         </activity>
 
         <activity
-            android:name=".Activities.SettingsActivity"
+            android:name=".Activities.PrefActivity"
             android:label="@string/settings">
             <intent-filter>
                 <action android:name=".Preferences" />
