@@ -6,12 +6,14 @@ package com.rv150.notes;
 
 import android.app.Activity;
 import android.content.Intent;
-public class Utils
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
+
+public class ThemeChanger
 {
-    public final static int THEME_DEFAULT = 0;
+    public final static int THEME_LIGHT = 0;
     public final static int THEME_DARK = 1;
-    public final static int THEME_BLUE = 2;
-    private static int sTheme =  THEME_DEFAULT;
+    private static int sTheme = -1;
     /**
      * Set the theme of the Activity, and restart it by creating a new Activity of the same type.
      */
@@ -24,17 +26,20 @@ public class Utils
     /** Set the theme of the activity, according to the configuration. */
     public static void onActivityCreateSetTheme(Activity activity)
     {
+        if (sTheme == -1) { // Загрузка текущей темы из настроек при запуске
+            SharedPreferences sPrefs = PreferenceManager.getDefaultSharedPreferences(activity);
+            boolean isDark = sPrefs.getBoolean("dark_theme", false);
+            sTheme = isDark? THEME_DARK : THEME_LIGHT;
+        }
         switch (sTheme)
         {
-            default:
-            case THEME_DEFAULT:
+            case THEME_LIGHT:
                 activity.setTheme(R.style.AppTheme_NoActionBarLight);
                 break;
             case THEME_DARK:
-                activity.setTheme(R.style.AppTheme_NoActionBarLight);
+                activity.setTheme(R.style.AppTheme_NoActionBarDark);
                 break;
-            case THEME_BLUE:
-               // activity.setTheme(R.style.Thirdheme);
+            default:
                 break;
         }
     }

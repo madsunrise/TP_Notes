@@ -8,7 +8,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
@@ -19,7 +18,6 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.text.InputType;
 
 import android.util.Log;
 import android.view.View;
@@ -28,8 +26,6 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.flask.colorpicker.ColorPickerView;
@@ -50,7 +46,7 @@ import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
 import com.rv150.notes.RecyclerAdapter;
 import com.rv150.notes.Constants;
-import com.rv150.notes.Utils;
+import com.rv150.notes.ThemeChanger;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
@@ -87,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.onActivityCreateSetTheme(this);
-        mTheme = Utils.getTheme();
+        ThemeChanger.onActivityCreateSetTheme(this);
+        mTheme = ThemeChanger.getTheme();
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -125,9 +121,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        int theme = Utils.getTheme();
+        int theme = ThemeChanger.getTheme();
         if (mTheme != theme) {
-            recreate();
+            recreate();        // Пересоздать активити на случай смены темы в настройках
         }
     }
 
@@ -365,7 +361,7 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerAdapter.setItems(mAllNotes);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
-            Intent intent = new Intent(this, SettingsActivity.class);
+            Intent intent = new Intent(this, PrefActivity.class);
             startActivity(intent);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_FEEDBACK, -1)) {

@@ -8,7 +8,7 @@ import android.preference.PreferenceFragment;
 
 import com.rv150.notes.Constants;
 import com.rv150.notes.R;
-import com.rv150.notes.Utils;
+import com.rv150.notes.ThemeChanger;
 
 /**
  * Created by Rudnev on 23.11.2016.
@@ -24,7 +24,7 @@ public class SettingsActivity extends PreferenceActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.onActivityCreateSetTheme(this);
+        ThemeChanger.onActivityCreateSetTheme(this);
 //        getFragmentManager().beginTransaction()
 //                .replace(android.R.id.content, new PrefsFragment()).commit();
         addPreferencesFromResource(R.xml.preferences);
@@ -51,10 +51,10 @@ public class SettingsActivity extends PreferenceActivity {
 
     private void changeTheme() {
         if (!lightTheme) {
-            Utils.changeToTheme(this, Utils.THEME_DEFAULT);
+            ThemeChanger.changeToTheme(this, ThemeChanger.THEME_LIGHT);
         }
         else {
-            Utils.changeToTheme(this, Utils.THEME_DARK);
+            ThemeChanger.changeToTheme(this, ThemeChanger.THEME_DARK);
         }
         lightTheme = !lightTheme;
     }

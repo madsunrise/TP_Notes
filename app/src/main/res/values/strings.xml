@@ -36,4 +36,5 @@
     <string name="note_was_removed">Заметка удалена</string>
     <string name="choose_color">Выбрать цвет</string>
     <string name="category_icon_description">Цветная иконка категории</string>
+    <string name="use_dark_theme">Использовать темную тему</string>
 </resources>

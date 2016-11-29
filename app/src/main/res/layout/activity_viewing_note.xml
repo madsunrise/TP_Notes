@@ -45,6 +45,7 @@
             android:textSize="14sp"
             android:id="@+id/output_note_content"/>
 
+        <!-- Внутрь этого layout динамически добавляются textView-категории -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"

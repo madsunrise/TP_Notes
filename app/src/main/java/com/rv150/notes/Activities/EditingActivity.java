@@ -1,11 +1,9 @@
 package com.rv150.notes.Activities;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,18 +12,11 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.CheckBox;
 import android.widget.CheckedTextView;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -38,13 +29,10 @@ import com.rv150.notes.Database.DAO.NoteDAO;
 import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
-import com.rv150.notes.Utils;
+import com.rv150.notes.ThemeChanger;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-
-import static android.widget.AbsListView.CHOICE_MODE_MULTIPLE;
 
 /**
  * Created by Rudnev on 16.11.2016.
@@ -55,7 +43,7 @@ public class EditingActivity extends AppCompatActivity {
     private EditText mContent;
     private NoteDAO mNoteDAO;
 
-    private List<Category> mChoosenCategories;
+    private List<Category> mChoosenCategories = new ArrayList<>();
     private List<Category> mAllCategories;
 
     // Флаг, означающий добавляем мы заметку или изменяем существующую
@@ -65,7 +53,7 @@ public class EditingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.onActivityCreateSetTheme(this);
+        ThemeChanger.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_editing_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_adding);
         setSupportActionBar(toolbar);

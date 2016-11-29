@@ -21,7 +21,7 @@ import com.rv150.notes.Database.DAO.NoteDAO;
 import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
-import com.rv150.notes.Utils;
+import com.rv150.notes.ThemeChanger;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class ViewingActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Utils.onActivityCreateSetTheme(this);
+        ThemeChanger.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_viewing_note);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_viewing);
         setSupportActionBar(toolbar);
@@ -168,11 +168,13 @@ public class ViewingActivity extends AppCompatActivity {
             GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
             drawable.setStroke(width, category.getColor());
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 textView.setBackground(drawable);
+                textView.setTextColor(getColor(R.color.md_black_1000));
             }
             else {
                 textView.setBackgroundDrawable(drawable);
+                textView.setTextColor(getResources().getColor(R.color.md_black_1000));
             }
             linearLayout.addView(textView);
         }
