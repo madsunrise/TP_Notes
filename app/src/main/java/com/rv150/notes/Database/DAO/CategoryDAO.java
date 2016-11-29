@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.rv150.notes.Database.DBHelper;
 import com.rv150.notes.Models.Category;
@@ -17,6 +18,7 @@ import java.util.List;
 
 public class CategoryDAO {
     private DBHelper mDBHelper;
+    private static final String TAG = "CategoryDAO";
 
     public CategoryDAO(Context context) {
         mDBHelper = DBHelper.getInstance(context);
@@ -32,6 +34,7 @@ public class CategoryDAO {
             categories.add(category);
         }
         cursor.close();
+        Log.i(TAG, "Get all categoryies OK");
         return categories;
     }
 
@@ -56,6 +59,7 @@ public class CategoryDAO {
             categories.add(category);
         }
         cursor.close();
+        Log.i(TAG, "All note's categories OK");
         return categories;
     }
 
@@ -64,8 +68,33 @@ public class CategoryDAO {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DBHelper.Category.COLUMN_NAME_NAME, category.getName());
             contentValues.put(DBHelper.Category.COLUMN_NAME_COLOR, category.getColor());
+            Log.i(TAG, "Category was added");
             return db.insert(DBHelper.Category.TABLE_NAME, null, contentValues);
     }
+
+
+    public void removeCategory(long id) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.delete(DBHelper.Category.TABLE_NAME, DBHelper.Category._ID + "=?", new String[]{String.valueOf(id)});
+        Log.i(TAG, "Category was removed");
+    }
+
+    public void updateCategory(Category category) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put(DBHelper.Category.COLUMN_NAME_NAME, category.getName());
+        values.put(DBHelper.Category.COLUMN_NAME_COLOR, category.getColor());
+        db.update(DBHelper.Category.TABLE_NAME, values,
+                DBHelper.Category._ID + " = ?", new String[]{String.valueOf(category.getId())});
+        Log.i(TAG, "Category was updated");
+    }
+
+    public void deleteAll() {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.delete(DBHelper.Category.TABLE_NAME, null, null);
+        Log.i(TAG, "All categoryies were removed");
+    }
+
 
 
     private Category mapCategory(Cursor cursor) {
