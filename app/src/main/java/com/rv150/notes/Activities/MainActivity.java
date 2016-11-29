@@ -295,6 +295,13 @@ public class MainActivity extends AppCompatActivity {
                 .withName(R.string.settings)
                 .withSelectable(false);
 
+        long idAbout = ID_GENERATOR.getAndIncrement();
+        editor.putLong(Constants.ID_ABOUT, idAbout);
+        PrimaryDrawerItem about = new PrimaryDrawerItem()
+                .withIdentifier(idAbout)
+                .withName(R.string.about)
+                .withSelectable(false);
+
         editor.apply();
 
         drawer = new DrawerBuilder()
@@ -305,7 +312,8 @@ public class MainActivity extends AppCompatActivity {
                         allNotes,
                         createCategory,
                         new DividerDrawerItem(),
-                        settings
+                        settings,
+                        about
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -364,8 +372,9 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(this, PrefActivity.class);
             startActivity(intent);
         }
-        else if (itemId == mSharedPreferences.getLong(Constants.ID_FEEDBACK, -1)) {
-            // feedback
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_ABOUT, -1)) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
         }
         else {      // Фильтруем заметки по определенной категории
             Category category = (Category) drawerItem.getTag();

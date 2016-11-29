@@ -7,4 +7,5 @@
     <color name="button_color">#1e9bde</color>
     <color name="primary_text_material_light">#ffffff</color>
     <color name="secondary_text_material_light">#ffffff</color>
+    <color name="aboutBackground">#6f000000</color>
 </resources>

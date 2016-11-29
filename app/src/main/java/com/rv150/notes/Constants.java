@@ -14,7 +14,5 @@ public class Constants {
     public static final String ID_ALL_NOTES = "id_all_notes";
     public static final String ID_CREATE_CATEGORY = "id_create_category";
     public static final String ID_SETTINGS = "id_settings";
-    public static final String ID_FEEDBACK = "id_feedback";
-    public static final String WAS_THEME_CHANGED = "was_theme_changed";
-
+    public static final String ID_ABOUT = "id_about";
 }
