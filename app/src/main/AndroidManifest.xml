@@ -7,26 +7,24 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBarLight">
         <activity
             android:name=".Activities.MainActivity"
-            android:label="@string/all_notes"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/all_notes">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".Activities.EditingActivity"
-            android:label="@string/adding_note"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/adding_note">
         </activity>
 
         <activity
             android:name=".Activities.ViewingActivity"
-            android:label="@string/viewing_note"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:label="@string/viewing_note">
         </activity>
 
         <activity

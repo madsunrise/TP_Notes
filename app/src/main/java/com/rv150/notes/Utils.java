@@ -28,10 +28,10 @@ public class Utils
         {
             default:
             case THEME_DEFAULT:
-                activity.setTheme(R.style.AppTheme_NoActionBar);
+                activity.setTheme(R.style.AppTheme_NoActionBarLight);
                 break;
             case THEME_DARK:
-                activity.setTheme(R.style.AppTheme_NoActionBarDark);
+                activity.setTheme(R.style.AppTheme_NoActionBarLight);
                 break;
             case THEME_BLUE:
                // activity.setTheme(R.style.Thirdheme);

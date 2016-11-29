@@ -174,7 +174,6 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.activity_main_menu, menu);
         return true;
     }
@@ -194,15 +193,14 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void showCreateCategoryDialog() {
-        currentThemeColor = -1; // Белый цвет по умолчанию для категории
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(R.string.creating_category);
+        currentThemeColor = -1; // Ставим белый цвет как цвет по умолчанию для категории
 
         final View dialogView = View.inflate(this, R.layout.category_add_dialog, null);
-        builder.setView(dialogView);
 
-        builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+
+        new AlertDialog.Builder(this)
+        .setTitle(R.string.creating_category)
+        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 EditText inputName = (EditText) dialogView.findViewById(R.id.input_category_name);
@@ -218,17 +216,14 @@ public class MainActivity extends AppCompatActivity {
                     createCategory(result);
                 }
             }
-        });
-        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.show();
-
+        })
+        .setNegativeButton(R.string.cancel, null)
+        .setView(dialogView)
+        .show();
     }
 
+
+    // Создание и сохранение новой категории
     private void createCategory(String name) {
         Category category = new Category(name);
         category.setColor(currentThemeColor);
@@ -254,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     public void openColorPicker(View view) {
         ColorPickerDialogBuilder
                 .with(this)
-                .setTitle("Choose color")
+                .setTitle(R.string.choose_color)
                 .initialColor(currentThemeColor)
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)
@@ -348,17 +343,18 @@ public class MainActivity extends AppCompatActivity {
         PrimaryDrawerItem newItem =  new PrimaryDrawerItem()
                 .withIdentifier(id)
                 .withName(category.getName())
-                .withTag(category)     // в TAG сохраним связанную категорию
+                .withTag(category)     // в поле Tag сохраним ссылку на связанную категорию
                 .withIcon(icon);
 
 
         long idCreateCategory = mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, 0);
-        int position = drawer.getPosition(idCreateCategory); // получаем позицию "Создать категорию"
+        int position = drawer.getPosition(idCreateCategory); // получаем позицию элемента "Создать категорию"
         drawer.addItemAtPosition(newItem, position);    //  и помещаем новую категорию на эту позицию
         drawer.closeDrawer();
     }
 
 
+    // Обработка нажатий на элемент nav. drawer
     private void drawerPushed(IDrawerItem drawerItem) {
         long itemId = drawerItem.getIdentifier();
         if (itemId == mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, -1)) {
@@ -375,7 +371,7 @@ public class MainActivity extends AppCompatActivity {
         else if (itemId == mSharedPreferences.getLong(Constants.ID_FEEDBACK, -1)) {
             // feedback
         }
-        else {      // Фильтруем заметки по категории
+        else {      // Фильтруем заметки по определенной категории
             Category category = (Category) drawerItem.getTag();
             final List<Note> filtered = mNoteDAO.getFromCategory(category.getId());
             mRecyclerAdapter.setItems(filtered);
