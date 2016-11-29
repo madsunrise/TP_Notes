@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:minHeight="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
-        app:theme="@style/AppTheme.NoActionBar"
+        app:theme="@style/AppTheme.NoActionBarLight"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
     <FrameLayout
