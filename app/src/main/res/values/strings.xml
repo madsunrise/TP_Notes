@@ -40,4 +40,8 @@
     <string name="about">Об авторе</string>
     <string name="developer_info">Разработчик: Иван Руднев</string>
     <string name="developer_url">https://park.mail.ru/profile/i.rudnev/</string>
+    <string name="undo_editing">Отменить редактирование?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="undo_adding_note">Отменить создание заметки?</string>
 </resources>

@@ -34,23 +34,25 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/name"
             android:textSize="20sp"
-            android:id="@+id/output_note_name"/>
+            android:id="@+id/output_note_name"
+            android:textIsSelectable="true"
+            android:layout_marginTop="5dp"/>
 
         <TextView
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="14sp"
-            android:id="@+id/output_note_content"/>
+            android:textSize="16sp"
+            android:id="@+id/output_note_content"
+            android:textIsSelectable="true"/>
 
         <!-- Внутрь этого layout динамически добавляются textView-категории -->
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="15dp"
             android:id="@+id/note_categories">
         </LinearLayout>
     </LinearLayout>

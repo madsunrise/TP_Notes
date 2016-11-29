@@ -191,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
     private void showCreateCategoryDialog() {
         currentThemeColor = -1; // Ставим белый цвет как цвет по умолчанию для категории
 
-        final View dialogView = View.inflate(this, R.layout.category_add_dialog, null);
+        final View dialogView = View.inflate(this, R.layout.create_category_dialog, null);
 
 
         new AlertDialog.Builder(this)

@@ -183,14 +183,11 @@ public class EditingActivity extends AppCompatActivity {
         private boolean[] checkedPositions;
         private List<Category> mItems;
 
-
-
         CustomAdapter (Context context, int resource, List<Category> items) {
             super(context, resource, items);
             this.mItems = items;
             checkedPositions = new boolean[mItems.size()];
         }
-
 
         void setCheckedItems (List<Category> checkedItems) {
             if (checkedItems == null || checkedItems.isEmpty()) {
@@ -220,7 +217,6 @@ public class EditingActivity extends AppCompatActivity {
         }
 
 
-
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             if(convertView == null){
@@ -239,7 +235,19 @@ public class EditingActivity extends AppCompatActivity {
 
             return convertView;
         }
+    }
 
-
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(this)
+                .setMessage(isModifying? R.string.undo_editing : R.string.undo_adding_note)
+                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        EditingActivity.super.onBackPressed();
+                    }
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
     }
 }
