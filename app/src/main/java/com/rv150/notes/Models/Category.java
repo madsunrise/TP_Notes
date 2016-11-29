@@ -3,9 +3,6 @@ package com.rv150.notes.Models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-
 /**
  * Created by Rudnev on 17.11.2016.
  */

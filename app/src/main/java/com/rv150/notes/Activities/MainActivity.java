@@ -14,17 +14,16 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
-
-import android.util.Log;
-import android.view.View;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -38,6 +37,7 @@ import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
+import com.rv150.notes.Constants;
 import com.rv150.notes.Database.DAO.CategoryDAO;
 import com.rv150.notes.Database.DAO.NoteDAO;
 import com.rv150.notes.ItemClickSupport;
@@ -45,7 +45,6 @@ import com.rv150.notes.Models.Category;
 import com.rv150.notes.Models.Note;
 import com.rv150.notes.R;
 import com.rv150.notes.RecyclerAdapter;
-import com.rv150.notes.Constants;
 import com.rv150.notes.ThemeChanger;
 
 import java.util.List;
@@ -57,6 +56,12 @@ import static com.rv150.notes.Constants.RC_VIEWING_NOTE;
 import static com.rv150.notes.Constants.RESULT_MODIFIED;
 import static com.rv150.notes.Constants.RESULT_REMOVED;
 
+
+// удаление категорий, очистка категорий
+// Цвет фона в nav drawer
+// иконка приложения
+// баги с фоном textview в темной теме
+// надпись "список пуст!"
 
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";

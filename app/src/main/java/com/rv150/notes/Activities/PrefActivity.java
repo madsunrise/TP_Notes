@@ -3,11 +3,8 @@ package com.rv150.notes.Activities;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
-import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.CheckBox;
-import android.widget.Toast;
 
 import com.rv150.notes.R;
 import com.rv150.notes.ThemeChanger;
