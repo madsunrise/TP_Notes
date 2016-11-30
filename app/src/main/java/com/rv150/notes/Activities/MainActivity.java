@@ -26,6 +26,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.flask.colorpicker.ColorPickerView;
@@ -58,9 +59,6 @@ import static com.rv150.notes.Constants.RESULT_REMOVED;
 
 
 
-// иконка приложения
-// надпись "список пуст!"
-
 public class MainActivity extends AppCompatActivity {
     private final static String TAG = "MainActivity";
 
@@ -68,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
     private FloatingActionButton mFab;
     private Drawer drawer;
     private Toolbar toolbar;
+    private TextView isEmpty; // Надпись "Нет заметок" при отсутствии записей
 
     private RecyclerAdapter mRecyclerAdapter;
     private List<Note> mAllNotes;
@@ -113,6 +112,14 @@ public class MainActivity extends AppCompatActivity {
         mAllNotes = mNoteDAO.getAll();      // показываем все заметки при запуске
         mRecyclerAdapter = new RecyclerAdapter(mAllNotes, getApplicationContext());
         mRecyclerView.setAdapter(mRecyclerAdapter);
+
+        isEmpty = (TextView) findViewById(R.id.empty_view);
+        if (mAllNotes.isEmpty()) {
+            isEmpty.setVisibility(View.VISIBLE);
+        }
+        else {
+            isEmpty.setVisibility(View.GONE);
+        }
     }
 
 
@@ -133,11 +140,12 @@ public class MainActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Note note = extras.getParcelable(Note.class.getSimpleName());
             if (note != null) {
-                mRecyclerAdapter.addItem(note);
+                long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+                drawer.setSelection(idAllNotes);    // Выставим пункт "все заметки"
+                Toast toast = Toast.makeText(getApplicationContext(),
+                        R.string.note_was_created, Toast.LENGTH_SHORT);
+                toast.show();
             }
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    R.string.note_was_created, Toast.LENGTH_SHORT);
-            toast.show();
         }
         if (requestCode == RC_VIEWING_NOTE) {
             if (resultCode == RESULT_MODIFIED) { // изменили существующую
@@ -152,10 +160,13 @@ public class MainActivity extends AppCompatActivity {
                 Note note = extras.getParcelable(Note.class.getSimpleName());
                 if (note != null) {
                     mRecyclerAdapter.removeItem(note);
+                    Toast toast = Toast.makeText(getApplicationContext(),
+                            R.string.note_was_removed, Toast.LENGTH_SHORT);
+                    toast.show();
                 }
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        R.string.note_was_removed, Toast.LENGTH_SHORT);
-                toast.show();
+                if (mRecyclerAdapter.getItemCount() == 0) {
+                    isEmpty.setVisibility(View.VISIBLE);
+                }
             }
         }
     }
@@ -327,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(getApplicationContext(),
                 R.string.category_was_cleared, Toast.LENGTH_SHORT);
         toast.show();
+        isEmpty.setVisibility(View.VISIBLE);
     }
 
     // Удалить саму категорию
@@ -477,6 +489,9 @@ public class MainActivity extends AppCompatActivity {
             setTitle(getString(R.string.all_notes));
             mAllNotes = mNoteDAO.getAll();
             mRecyclerAdapter.setItems(mAllNotes);
+            if (!mAllNotes.isEmpty()) {
+                isEmpty.setVisibility(View.GONE);
+            }
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
             Intent intent = new Intent(this, SettingsActivity.class);
@@ -491,7 +506,9 @@ public class MainActivity extends AppCompatActivity {
             final List<Note> filtered = mNoteDAO.getFromCategory(category.getId());
             mRecyclerAdapter.setItems(filtered);
             setTitle(category.getName());
-
+            if (filtered.isEmpty()) {
+                isEmpty.setVisibility(View.VISIBLE);
+            }
         }
         drawer.closeDrawer();
     }
@@ -506,7 +523,6 @@ public class MainActivity extends AppCompatActivity {
                 DividerItemDecoration.VERTICAL);
         mRecyclerView.addItemDecoration(dividerItemDecoration);
         setUpItemTouchHelper();
-        setUpAnimationDecoratorHelper();
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
@@ -537,13 +553,10 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-
+    // Реализует возможность удаления заметки свайпом
     private void setUpItemTouchHelper() {
-
         ItemTouchHelper.SimpleCallback simpleItemTouchCallback =
                 new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-
-                    // we want to cache these and not allocate anything repeatedly in the onChildDraw method
                     Drawable background;
                     Drawable xMark;
                     int xMarkMargin;
@@ -557,7 +570,6 @@ public class MainActivity extends AppCompatActivity {
                         initiated = true;
                     }
 
-                    // not important, we don't want drag & drop
                     @Override
                     public boolean onMove(RecyclerView recyclerView,
                                           RecyclerView.ViewHolder viewHolder,
@@ -578,6 +590,9 @@ public class MainActivity extends AppCompatActivity {
                         mRecyclerAdapter.removeItemAtPosition(pos);
                         // И из базы
                         mNoteDAO.removeNote(note.getId());
+                        if (mRecyclerAdapter.getItemCount() == 0) {
+                            isEmpty.setVisibility(View.VISIBLE);
+                        }
 
                         View parentLayout = findViewById(R.id.recycler_view_main);
                         Snackbar snackbar = Snackbar
@@ -585,10 +600,11 @@ public class MainActivity extends AppCompatActivity {
                                 .setAction(R.string.undo, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
-                                        // Откат
+                                        // Откат удаления
                                         long id = mNoteDAO.insertNote(note);
                                         note.setId(id);
                                         mRecyclerAdapter.addItem(note, pos);
+                                        isEmpty.setVisibility(View.GONE);
                                     }
                                 });
 
@@ -598,17 +614,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onChildDraw(Canvas c, RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                         View itemView = viewHolder.itemView;
-
-                        // not sure why, but this method get's called for viewholder that are already swiped away
                         if (viewHolder.getAdapterPosition() == -1) {
-                            // not interested in those
                             return;
                         }
-
                         if (!initiated) {
                             init();
                         }
-
                         // draw red background
                         background.setBounds(itemView.getRight() + (int) dX, itemView.getTop(), itemView.getRight(), itemView.getBottom());
                         background.draw(c);
@@ -617,15 +628,12 @@ public class MainActivity extends AppCompatActivity {
                         int itemHeight = itemView.getBottom() - itemView.getTop();
                         int intrinsicWidth = xMark.getIntrinsicWidth();
                         int intrinsicHeight = xMark.getIntrinsicWidth();
-
                         int xMarkLeft = itemView.getRight() - xMarkMargin - intrinsicWidth;
                         int xMarkRight = itemView.getRight() - xMarkMargin;
                         int xMarkTop = itemView.getTop() + (itemHeight - intrinsicHeight)/2;
                         int xMarkBottom = xMarkTop + intrinsicHeight;
                         xMark.setBounds(xMarkLeft, xMarkTop, xMarkRight, xMarkBottom);
-
                         xMark.draw(c);
-
                         super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
                     }
 
@@ -633,89 +641,4 @@ public class MainActivity extends AppCompatActivity {
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(simpleItemTouchCallback);
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
     }
-
-    /**
-     * We're gonna setup another ItemDecorator that will draw the red background in the empty space while the items are animating to thier new positions
-     * after an item is removed.
-     */
-    private void setUpAnimationDecoratorHelper() {
-        mRecyclerView.addItemDecoration(new RecyclerView.ItemDecoration() {
-
-            // we want to cache this and not allocate anything repeatedly in the onDraw method
-            Drawable background;
-            boolean initiated;
-
-            private void init() {
-                background = new ColorDrawable(Color.RED);
-                initiated = true;
-            }
-
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-
-                if (!initiated) {
-                    init();
-                }
-
-                // only if animation is in progress
-                if (parent.getItemAnimator().isRunning()) {
-
-                    // some items might be animating down and some items might be animating up to close the gap left by the removed item
-                    // this is not exclusive, both movement can be happening at the same time
-                    // to reproduce this leave just enough items so the first one and the last one would be just a little off screen
-                    // then remove one from the middle
-
-                    // find first child with translationY > 0
-                    // and last one with translationY < 0
-                    // we're after a rect that is not covered in recycler-view views at this point in time
-                    View lastViewComingDown = null;
-                    View firstViewComingUp = null;
-
-                    // this is fixed
-                    int left = 0;
-                    int right = parent.getWidth();
-
-                    // this we need to find out
-                    int top = 0;
-                    int bottom = 0;
-
-                    // find relevant translating views
-                    int childCount = parent.getLayoutManager().getChildCount();
-                    for (int i = 0; i < childCount; i++) {
-                        View child = parent.getLayoutManager().getChildAt(i);
-                        if (child.getTranslationY() < 0) {
-                            // view is coming down
-                            lastViewComingDown = child;
-                        } else if (child.getTranslationY() > 0) {
-                            // view is coming up
-                            if (firstViewComingUp == null) {
-                                firstViewComingUp = child;
-                            }
-                        }
-                    }
-
-                    if (lastViewComingDown != null && firstViewComingUp != null) {
-                        // views are coming down AND going up to fill the void
-                        top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
-                        bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
-                    } else if (lastViewComingDown != null) {
-                        // views are going down to fill the void
-                        top = lastViewComingDown.getBottom() + (int) lastViewComingDown.getTranslationY();
-                        bottom = lastViewComingDown.getBottom();
-                    } else if (firstViewComingUp != null) {
-                        // views are coming up to fill the void
-                        top = firstViewComingUp.getTop();
-                        bottom = firstViewComingUp.getTop() + (int) firstViewComingUp.getTranslationY();
-                    }
-
-                    background.setBounds(left, top, right, bottom);
-                    background.draw(c);
-
-                }
-                super.onDraw(c, parent, state);
-            }
-
-        });
-    }
-
 }

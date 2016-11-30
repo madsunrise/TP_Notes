@@ -54,6 +54,7 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
 
     @Override
     public void onBindViewHolder(RecyclerAdapter.ViewHolder viewHolder, int position) {
+
         final Note item = mItems.get(position);
         viewHolder.mName.setText(item.getName());
 
