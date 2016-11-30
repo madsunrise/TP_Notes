@@ -48,4 +48,5 @@
     <string name="clear_category">Очистить категорию</string>
     <string name="want_to_clear_category">Вы действительно хотите удалить заметки с данной категорией?</string>
     <string name="want_to_remove_category">Вы действительно хотите удалить эту категорию?</string>
+    <string name="note_was_created">Заметка создана</string>
 </resources>

@@ -167,6 +167,17 @@ public class EditingActivity extends AppCompatActivity {
             GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
             drawable.setStroke(width, category.getColor());
 
+            if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    drawable.setColor(getColor(R.color.material_drawer_dark_background));
+                    textView.setTextColor(getColor(R.color.white));
+                }
+                else {
+                    drawable.setColor(getResources().getColor(R.color.material_drawer_dark_background));
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                }
+            }
+
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 textView.setBackground(drawable);
             }

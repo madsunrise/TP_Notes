@@ -141,6 +141,9 @@ public class MainActivity extends AppCompatActivity {
             if (note != null) {
                 mRecyclerAdapter.addItem(note);
             }
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.note_was_created, Toast.LENGTH_SHORT);
+            toast.show();
         }
         if (requestCode == RC_VIEWING_NOTE) {
             if (resultCode == RESULT_MODIFIED) { // изменили существующую
@@ -220,8 +223,6 @@ public class MainActivity extends AppCompatActivity {
         currentThemeColor = -1; // Ставим белый цвет как цвет по умолчанию для категории
 
         final View dialogView = View.inflate(this, R.layout.create_category_dialog, null);
-
-
         new AlertDialog.Builder(this)
         .setTitle(R.string.creating_category)
         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -394,6 +395,7 @@ public class MainActivity extends AppCompatActivity {
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1)) {
             setTitle(getString(R.string.all_notes));
+            mAllNotes = mNoteDAO.getAll();
             mRecyclerAdapter.setItems(mAllNotes);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {

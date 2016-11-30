@@ -2,6 +2,7 @@ package com.rv150.notes.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,6 +39,7 @@ public class ViewingActivity extends AppCompatActivity {
     private TextView mName;
     private TextView mContent;
     private Note note;
+    private static final String TAG = "Viewing Activity";
 
     // Флаг, означающий, была ли заметка отредактирована
     private boolean wasModified = false;
@@ -165,8 +168,28 @@ public class ViewingActivity extends AppCompatActivity {
 
             // Установим цвет обводки textView
             int width = (int) getResources().getDimension(R.dimen.textview_border);
-            GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
+            GradientDrawable original = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
+            Drawable.ConstantState state = original.getConstantState();
+            if (state == null) {
+                Log.wtf(TAG, "Constant state is null!");
+                return;
+            }
+
+            GradientDrawable drawable = (GradientDrawable) state.newDrawable();
+            drawable.mutate();
             drawable.setStroke(width, category.getColor());
+
+            // При использовании темной темы
+            if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    drawable.setColor(getColor(R.color.material_drawer_dark_background));
+                    textView.setTextColor(getColor(R.color.white));
+                }
+                else {
+                    drawable.setColor(getResources().getColor(R.color.material_drawer_dark_background));
+                    textView.setTextColor(getResources().getColor(R.color.white));
+                }
+            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 textView.setBackground(drawable);

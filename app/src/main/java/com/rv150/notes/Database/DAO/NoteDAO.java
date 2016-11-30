@@ -140,7 +140,7 @@ public class NoteDAO {
                 " WHERE " + NOTE_ID + " IN (SELECT " +
                 NOTE_CATEGORY_NOTE_ID + " FROM " + NOTE_CATEGORY_TABLE +
                 " WHERE " + NOTE_CATEGORY_CATEGORY_ID + " = ?)";
-        db.rawQuery(query, new String[]{String.valueOf(categoryId)});
+        db.execSQL(query, new String[]{String.valueOf(categoryId)});
         Log.i(TAG, "Notes from category was removed");
     }
 

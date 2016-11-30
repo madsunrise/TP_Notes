@@ -71,6 +71,18 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
                 GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(mContext, R.drawable.textview_border);
                 drawable.setStroke(width, category.getColor());
 
+                // В случае темной темы
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        drawable.setColor(mContext.getColor(R.color.material_drawer_dark_background));
+                        textView.setTextColor(mContext.getColor(R.color.white));
+                    }
+                    else {
+                        drawable.setColor(mContext.getResources().getColor(R.color.material_drawer_dark_background));
+                        textView.setTextColor(mContext.getResources().getColor(R.color.white));
+                    }
+                }
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     textView.setBackground(drawable);
                 }
