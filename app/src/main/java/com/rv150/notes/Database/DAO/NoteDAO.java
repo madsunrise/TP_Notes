@@ -127,7 +127,7 @@ public class NoteDAO {
         Log.i(TAG, "Note was removed");
     }
 
-    public void removeNotesFromCategory (long categoryId) {
+    public void removeNotesWithCategory(long categoryId) {
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
         String NOTE_TABLE = DBHelper.Note.TABLE_NAME;
         String NOTE_ID = DBHelper.Note._ID;
@@ -141,7 +141,7 @@ public class NoteDAO {
                 NOTE_CATEGORY_NOTE_ID + " FROM " + NOTE_CATEGORY_TABLE +
                 " WHERE " + NOTE_CATEGORY_CATEGORY_ID + " = ?)";
         db.execSQL(query, new String[]{String.valueOf(categoryId)});
-        Log.i(TAG, "Notes from category was removed");
+        Log.i(TAG, "Notes with specific category were removed");
     }
 
 

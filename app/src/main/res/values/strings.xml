@@ -50,4 +50,9 @@
     <string name="want_to_remove_category">Вы действительно хотите удалить эту категорию?</string>
     <string name="note_was_created">Заметка создана</string>
     <string name="this_category_cant_be_removed">Эту категорию нельзя удалить</string>
+    <string name="change_category">Изменить категорию</string>
+    <string name="updating_category">Изменение категории</string>
+    <string name="category_was_removed">Категория удалена</string>
+    <string name="category_was_updated">Категория обновлена</string>
+    <string name="category_was_cleared">Категория очищена</string>
 </resources>

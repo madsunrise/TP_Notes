@@ -3,6 +3,7 @@ package com.rv150.notes.Database.DAO;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -69,7 +70,7 @@ public class CategoryDAO {
             contentValues.put(DBHelper.Category.COLUMN_NAME_NAME, category.getName());
             contentValues.put(DBHelper.Category.COLUMN_NAME_COLOR, category.getColor());
             Log.i(TAG, "Category was added");
-            return db.insert(DBHelper.Category.TABLE_NAME, null, contentValues);
+            return db.insertOrThrow(DBHelper.Category.TABLE_NAME, null, contentValues);
     }
 
 

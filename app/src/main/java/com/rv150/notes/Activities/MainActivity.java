@@ -3,6 +3,7 @@ package com.rv150.notes.Activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteConstraintException;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -56,10 +57,8 @@ import static com.rv150.notes.Constants.RESULT_MODIFIED;
 import static com.rv150.notes.Constants.RESULT_REMOVED;
 
 
-// удаление категорий, очистка категорий
-// Цвет фона в nav drawer
+
 // иконка приложения
-// баги с фоном textview в темной теме
 // надпись "список пуст!"
 
 public class MainActivity extends AppCompatActivity {
@@ -79,15 +78,14 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
 
     private int mTheme;
-    private int currentThemeColor;
+    private int choosenCategoryColor;
 
-
-    private static final AtomicLong ID_GENERATOR = new AtomicLong();
+    private final AtomicLong ID_GENERATOR = new AtomicLong();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ThemeChanger.onActivityCreateSetTheme(this);
+        ThemeChanger.onActivityCreateSetTheme(this);    // Установка текущей темы при создании активити
         mTheme = ThemeChanger.getTheme();
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -107,13 +105,10 @@ public class MainActivity extends AppCompatActivity {
         mNoteDAO = new NoteDAO(getApplicationContext());
         mCategoryDAO = new CategoryDAO(getApplicationContext());
 
-
         setUpDrawer();
-
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recycler_view_main);
         setUpRecyclerView();
-
 
         mAllNotes = mNoteDAO.getAll();      // показываем все заметки при запуске
         mRecyclerAdapter = new RecyclerAdapter(mAllNotes, getApplicationContext());
@@ -121,12 +116,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onResume() {
         super.onResume();
-        int theme = ThemeChanger.getTheme();
-        if (mTheme != theme) {
+        int currentTheme = ThemeChanger.getTheme();
+        if (mTheme != currentTheme) {
             recreate();        // Пересоздать активити на случай смены темы в настройках
         }
     }
@@ -153,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
                     mRecyclerAdapter.updateItem(note);
                 }
             }
-            else if (resultCode == RESULT_REMOVED) {    // удалили
+            else if (resultCode == RESULT_REMOVED) {    // удалили заметку
                 Bundle extras = data.getExtras();
                 Note note = extras.getParcelable(Note.class.getSimpleName());
                 if (note != null) {
@@ -166,6 +160,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     @Override
     public void onBackPressed() {
         if (drawer.isDrawerOpen()) {
@@ -174,6 +169,7 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_clear_category) {
+        if (id == R.id.action_clear_category) { // Удалить все заметки с данной категорией
             new AlertDialog.Builder(this)
                     .setTitle(R.string.warning)
                     .setMessage(R.string.want_to_clear_category)
@@ -198,7 +194,13 @@ public class MainActivity extends AppCompatActivity {
                     .show();
             return true;
         }
-        if (id == R.id.action_remove_category) {
+
+        if (id == R.id.action_change_category) {  // Изменить категорию
+            showEditCategoryDialog(true);
+            return true;
+        }
+
+        if (id == R.id.action_remove_category) {  // Удалить категорию
             new AlertDialog.Builder(this)
                     .setTitle(R.string.warning)
                     .setMessage(R.string.want_to_remove_category)
@@ -216,46 +218,13 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void clearCategory() {
-        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
-        long currentSelection = drawer.getCurrentSelection();
-        if (idAllNotes == currentSelection) { // Выбран пункт "Все заметки"
-            mNoteDAO.removeAll();
-            mRecyclerAdapter.removeAllItems();
-        }
-        else {              // Получаем выделенную вещь, а из нее - объект категории
-            IDrawerItem drawerItem = drawer.getDrawerItem(currentSelection);
-            Category category = (Category) drawerItem.getTag();
-            mNoteDAO.removeNotesFromCategory(category.getId());
-            mRecyclerAdapter.removeAllItems();
-        }
-    }
+    // Создание или изменение уже существующей категории (в зав-ти от флага)
+    private void showEditCategoryDialog(final boolean updateExisting) {
+        choosenCategoryColor = -1; // Ставим белый цвет как цвет по умолчанию для категории
+        final View dialogView = View.inflate(this, R.layout.editing_category_dialog, null);
 
-    private void removeCategory() {
-        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
-        long currentSelection = drawer.getCurrentSelection();
-        if (idAllNotes == currentSelection) { // Выбран пункт "Все заметки"
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    R.string.this_category_cant_be_removed, Toast.LENGTH_SHORT);
-            toast.show();
-        }
-        else {
-            IDrawerItem drawerItem = drawer.getDrawerItem(currentSelection);
-            Category category = (Category) drawerItem.getTag();
-            mCategoryDAO.removeCategory(category.getId());
-            drawer.removeItem(currentSelection);
-            drawer.setSelection(idAllNotes);
-        }
-    }
-
-
-
-    private void showCreateCategoryDialog() {
-        currentThemeColor = -1; // Ставим белый цвет как цвет по умолчанию для категории
-
-        final View dialogView = View.inflate(this, R.layout.create_category_dialog, null);
         new AlertDialog.Builder(this)
-        .setTitle(R.string.creating_category)
+        .setTitle(updateExisting? R.string.updating_category : R.string.creating_category)
         .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -265,11 +234,16 @@ public class MainActivity extends AppCompatActivity {
                     Toast toast = Toast.makeText(getApplicationContext(),
                             R.string.field_is_empty, Toast.LENGTH_SHORT);
                     toast.show();
-                    showCreateCategoryDialog(); // Вызываем диалог заново
+                    showEditCategoryDialog(updateExisting); // Вызываем диалог заново
                 }
                 else {
                     result = result.substring(0, 1).toUpperCase() + result.substring(1);
-                    createCategory(result);
+                    if (updateExisting) {
+                        updateCategory(result);
+                    }
+                    else {
+                        createCategory(result);
+                    }
                 }
             }
         })
@@ -282,12 +256,12 @@ public class MainActivity extends AppCompatActivity {
     // Создание и сохранение новой категории
     private void createCategory(String name) {
         Category category = new Category(name);
-        category.setColor(currentThemeColor);
+        category.setColor(choosenCategoryColor);
         long id;
         try {
             id = mCategoryDAO.insertCategory(category);
         }
-        catch (RuntimeException e) {
+        catch (SQLiteConstraintException e) {
             Toast toast = Toast.makeText(getApplicationContext(),
                     R.string.category_with_this_name_already_exists, Toast.LENGTH_SHORT);
             toast.show();
@@ -302,11 +276,86 @@ public class MainActivity extends AppCompatActivity {
         toast.show();
     }
 
+    private void updateCategory (String result) {
+        long drawerItemId = drawer.getCurrentSelection();
+        PrimaryDrawerItem drawerItem = (PrimaryDrawerItem) drawer.getDrawerItem(drawerItemId);
+        Category category = (Category) drawerItem.getTag();
+        category.setName(result);
+        category.setColor(choosenCategoryColor);
+        try {
+            mCategoryDAO.updateCategory(category);
+        }
+        catch (Exception e) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.category_with_this_name_already_exists, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        drawerItem.withName(category.getName());
+
+        Drawable original = ContextCompat.getDrawable(this, R.drawable.circle);
+        Drawable.ConstantState constantState = original.getConstantState();
+        if (constantState == null) {
+            Log.wtf(TAG, "Drawable.ConstantState is null");
+            return;
+        }
+        Drawable icon = original.getConstantState().newDrawable();
+        icon.mutate();
+        icon.setColorFilter(category.getColor(), PorterDuff.Mode.MULTIPLY);
+
+        drawerItem.withIcon(icon);
+        drawer.updateItem(drawerItem);
+        Toast toast = Toast.makeText(getApplicationContext(),
+                R.string.category_was_updated, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    // Удалить заметки с данной категорией
+    private void clearCategory() {
+        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+        long currentSelection = drawer.getCurrentSelection();
+        if (idAllNotes == currentSelection) { // Выбран пункт "Все заметки"
+            mNoteDAO.removeAll();
+            mRecyclerAdapter.removeAllItems();
+        }
+        else {              // Получаем выбранный объект в Drawer, а из него - объект категории
+            IDrawerItem drawerItem = drawer.getDrawerItem(currentSelection);
+            Category category = (Category) drawerItem.getTag();
+            mNoteDAO.removeNotesWithCategory(category.getId());
+            mRecyclerAdapter.removeAllItems();
+        }
+        Toast toast = Toast.makeText(getApplicationContext(),
+                R.string.category_was_cleared, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+    // Удалить саму категорию
+    private void removeCategory() {
+        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+        long currentSelection = drawer.getCurrentSelection();
+        if (idAllNotes == currentSelection) {                   // Выбран пункт "Все заметки"
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.this_category_cant_be_removed, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+        IDrawerItem drawerItem = drawer.getDrawerItem(currentSelection);
+        Category category = (Category) drawerItem.getTag();
+        mCategoryDAO.removeCategory(category.getId());
+        drawer.removeItem(currentSelection);
+        drawer.setSelection(idAllNotes);
+        Toast toast = Toast.makeText(getApplicationContext(),
+                R.string.category_was_removed, Toast.LENGTH_SHORT);
+        toast.show();
+    }
+
+
+
     public void openColorPicker(View view) {
         ColorPickerDialogBuilder
                 .with(this)
                 .setTitle(R.string.choose_color)
-                .initialColor(currentThemeColor)
+                .initialColor(choosenCategoryColor)
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .density(12)
                 .setOnColorSelectedListener(new OnColorSelectedListener() {
@@ -317,7 +366,7 @@ public class MainActivity extends AppCompatActivity {
                 .setPositiveButton(R.string.ok, new ColorPickerClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
-                        currentThemeColor = selectedColor;
+                        choosenCategoryColor = selectedColor;
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -422,7 +471,7 @@ public class MainActivity extends AppCompatActivity {
     private void drawerPushed(IDrawerItem drawerItem) {
         long itemId = drawerItem.getIdentifier();
         if (itemId == mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, -1)) {
-                showCreateCategoryDialog();
+                showEditCategoryDialog(false);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1)) {
             setTitle(getString(R.string.all_notes));
