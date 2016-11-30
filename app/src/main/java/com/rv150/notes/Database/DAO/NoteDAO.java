@@ -57,7 +57,8 @@ public class NoteDAO {
         String NOTE_CATEGORY_NOTE_ID = DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID;
         String NOTE_CATEGORY_CATEGORY_ID = DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID;
 
-        String query = "SELECT " + NOTE_TABLE + '.' + NOTE_NAME + ',' +
+        String query = "SELECT " +
+                NOTE_TABLE + '.' + NOTE_NAME + ',' +
                 NOTE_TABLE + '.' + NOTE_CONTENT + ',' +
                 NOTE_TABLE + '.' + NOTE_CREATED_AT + ',' +
                 NOTE_TABLE + '.' + NOTE_ID +
@@ -86,7 +87,7 @@ public class NoteDAO {
         ContentValues noteValues = new ContentValues();
         noteValues.put(DBHelper.Note.COLUMN_NAME_NAME, note.getName());
         noteValues.put(DBHelper.Note.COLUMN_NAME_CONTENT, note.getContent());
-        noteValues.put(DBHelper.Note.COLUMN_NAME_CREATED_AT, note.getCreatedAtInMillis());
+        noteValues.put(DBHelper.Note.COLUMN_NAME_CREATED_AT, note.getCreatedAt().getTimeInMillis());
         long noteId = db.insert(DBHelper.Note.TABLE_NAME, null, noteValues);
         setNoteCategories(noteId, note.getCategories());
         Log.i(TAG, "Note was inserted");
@@ -141,7 +142,7 @@ public class NoteDAO {
                 NOTE_CATEGORY_NOTE_ID + " FROM " + NOTE_CATEGORY_TABLE +
                 " WHERE " + NOTE_CATEGORY_CATEGORY_ID + " = ?)";
         db.execSQL(query, new String[]{String.valueOf(categoryId)});
-        Log.i(TAG, "Notes with specific category were removed");
+        Log.i(TAG, "Notes with specific category was removed");
     }
 
 

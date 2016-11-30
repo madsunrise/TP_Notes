@@ -14,16 +14,16 @@ public class ThemeChanger
     public final static int THEME_LIGHT = 0;
     public final static int THEME_DARK = 1;
     private static int sTheme = -1;
-    /**
-     * Set the theme of the Activity, and restart it by creating a new Activity of the same type.
-     */
+
+    // Сменить сразу тему активити
     public static void changeToTheme(Activity activity, int theme)
     {
         sTheme = theme;
         activity.finish();
         activity.startActivity(new Intent(activity, activity.getClass()));
     }
-    /** Set the theme of the activity, according to the configuration. */
+
+    // Выставить активити тему при его создании
     public static void onActivityCreateSetTheme(Activity activity)
     {
         if (sTheme == -1) { // Загрузка текущей темы из настроек при запуске

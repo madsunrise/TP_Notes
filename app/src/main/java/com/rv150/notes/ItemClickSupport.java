@@ -7,6 +7,7 @@ import android.view.View;
  * Created by Rudnev on 18.11.2016.
  */
 
+// Класс нужен для реализации обработки нажатия на элемент RecyclerView
 public class ItemClickSupport {
     private final RecyclerView mRecyclerView;
     private OnItemClickListener mOnItemClickListener;
@@ -62,36 +63,17 @@ public class ItemClickSupport {
         return support;
     }
 
-    public static ItemClickSupport removeFrom(RecyclerView view) {
-        ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.item_click_support);
-        if (support != null) {
-            support.detach(view);
-        }
-        return support;
-    }
 
     public ItemClickSupport setOnItemClickListener(OnItemClickListener listener) {
         mOnItemClickListener = listener;
         return this;
     }
 
-    public ItemClickSupport setOnItemLongClickListener(OnItemLongClickListener listener) {
-        mOnItemLongClickListener = listener;
-        return this;
-    }
-
-    private void detach(RecyclerView view) {
-        view.removeOnChildAttachStateChangeListener(mAttachListener);
-        view.setTag(R.id.item_click_support, null);
-    }
-
     public interface OnItemClickListener {
-
         void onItemClicked(RecyclerView recyclerView, int position, View v);
     }
 
     public interface OnItemLongClickListener {
-
         boolean onItemLongClicked(RecyclerView recyclerView, int position, View v);
     }
 }

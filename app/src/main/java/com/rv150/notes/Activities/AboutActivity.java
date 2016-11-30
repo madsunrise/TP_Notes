@@ -11,12 +11,13 @@ import com.rv150.notes.R;
  * Created by Rudnev on 29.11.2016.
  */
 
+// Активити с информацией о разработчике
 public class AboutActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_about);
     }
 

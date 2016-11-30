@@ -8,6 +8,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -97,6 +98,7 @@ public class EditingActivity extends AppCompatActivity {
         }
     }
 
+    // Диалог с выбором категорий для заметки
     public void chooseCategories(View view) {
         if (mAllCategories.isEmpty()) {
             Toast toast = Toast.makeText(getApplicationContext(),
@@ -108,7 +110,7 @@ public class EditingActivity extends AppCompatActivity {
         ListView listView = new ListView(this);
 
         final CustomAdapter adapter = new CustomAdapter(this, R.layout.categories_dialog_item, mAllCategories);
-        adapter.setCheckedItems(mChoosenCategories);
+        adapter.setCheckedItems(mChoosenCategories);    // Выставляем галочки на уже добавленные к заметке ранее категории
 
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -136,17 +138,17 @@ public class EditingActivity extends AppCompatActivity {
     }
 
 
-
+    // Обновить textview, отображающие выбранные категории
     private void updateCategoriesTextViews(List<Category> categories) {
         LinearLayout linearLayout = (LinearLayout) findViewById(R.id.categories_lin_layout);
         linearLayout.removeAllViews();
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, 25, 0);  // params.setMargins(left, top, right, bottom);
+
         for (Category category: categories) {
             TextView textView = new TextView(this);
             textView.setText(category.getName());
             textView.setLayoutParams(params);
-
 
             // Установим цвет обводки textView
             int width = (int) getResources().getDimension(R.dimen.textview_border);
@@ -180,6 +182,7 @@ public class EditingActivity extends AppCompatActivity {
         }
     }
 
+
     public void saveNote(View view) {
         String name = mName.getText().toString();
         String content = mContent.getText().toString();
@@ -204,7 +207,6 @@ public class EditingActivity extends AppCompatActivity {
         } else {
             mNoteDAO.insertNote(mNote);
         }
-
         finish();
     }
 
@@ -219,6 +221,7 @@ public class EditingActivity extends AppCompatActivity {
             checkedPositions = new boolean[mItems.size()];
         }
 
+        // Данные категории отметить галочками в диалоге
         void setCheckedItems (List<Category> checkedItems) {
             if (checkedItems == null || checkedItems.isEmpty()) {
                 return;
@@ -243,12 +246,12 @@ public class EditingActivity extends AppCompatActivity {
             if (position >= 0 && position < checkedPositions.length) {
                 checkedPositions[position] = checked;
             }
-
         }
 
 
         @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
+        @NonNull
+        public View getView(int position, View convertView, @NonNull ViewGroup parent) {
             if(convertView == null){
                 convertView = getLayoutInflater().inflate(R.layout.categories_dialog_item, parent, false);
             }
@@ -259,10 +262,9 @@ public class EditingActivity extends AppCompatActivity {
             boolean isChecked = checkedPositions[position];
             checkedTextView.setChecked(isChecked);
 
-
+            // Соответсвующая категории цветная иконка
             ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
             imageView.setColorFilter(item.getColor(), PorterDuff.Mode.MULTIPLY);
-
             return convertView;
         }
     }

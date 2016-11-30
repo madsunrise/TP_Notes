@@ -111,14 +111,6 @@ public class Note implements Parcelable {
         return mCreatedAt;
     }
 
-    public long getCreatedAtInMillis() {
-        return mCreatedAt.getTimeInMillis();
-    }
-
-    public void setCreatedAt(Calendar createdAt) {
-        this.mCreatedAt = createdAt;
-    }
-
     public long getId() {
         return mID;
     }

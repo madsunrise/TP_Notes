@@ -62,7 +62,7 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayoutCompat.LayoutParams.WRAP_CONTENT, LinearLayoutCompat.LayoutParams.WRAP_CONTENT);
         params.setMargins(0, 0, 25, 0); // params.setMargins(left, top, right, bottom);
 
-        if (!item.getCategories().isEmpty()) {
+        if (!item.getCategories().isEmpty()) {  // Отображение категорий для заметки
             for (Category category : item.getCategories()) {
                 TextView textView = new TextView(mContext);
                 textView.setText(category.getName());

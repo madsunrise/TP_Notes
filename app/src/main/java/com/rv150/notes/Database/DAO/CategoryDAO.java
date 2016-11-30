@@ -3,7 +3,6 @@ package com.rv150.notes.Database.DAO;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
@@ -44,10 +43,18 @@ public class CategoryDAO {
         SQLiteDatabase db = mDBHelper.getReadableDatabase();
         String CATEGORY_TABLE = DBHelper.Category.TABLE_NAME;
         String CATEGORY_ID = DBHelper.Category._ID;
+        String CATEGORY_NAME = DBHelper.Category.COLUMN_NAME_NAME;
+        String CATEGORY_COLOR = DBHelper.Category.COLUMN_NAME_COLOR;
+
         String NOTE_CATEGORY_TABLE = DBHelper.NoteCategory.TABLE_NAME;
         String NOTE_CATEGORY_CATEGORY_ID = DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID;
         String NOTE_CATEGORY_NOTE_ID = DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID;
-        String query = "SELECT * FROM " + CATEGORY_TABLE +
+
+        String query = "SELECT " +
+                CATEGORY_TABLE + '.' + CATEGORY_ID + ',' +
+                CATEGORY_TABLE + '.' + CATEGORY_NAME + ',' +
+                CATEGORY_TABLE + '.' + CATEGORY_COLOR +
+                " FROM " + CATEGORY_TABLE +
                 " JOIN " + NOTE_CATEGORY_TABLE + " ON " +
                 CATEGORY_TABLE + '.' + CATEGORY_ID + '=' +
                 NOTE_CATEGORY_TABLE + '.' + NOTE_CATEGORY_CATEGORY_ID +

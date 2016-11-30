@@ -206,12 +206,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        long currentCategory = drawer.getCurrentSelection();
+        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+
+        if (currentCategory == idAllNotes) { // Если выбрано "Все заметки"
+            menu.getItem(0).setTitle(R.string.delete_all);
+            menu.getItem(1).setVisible(false);
+            menu.getItem(2).setVisible(false);
+        }
+        else {
+            menu.getItem(0).setTitle(R.string.clear_category);
+            menu.getItem(1).setVisible(true);
+            menu.getItem(2).setVisible(true);
+        }
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_clear_category) { // Удалить все заметки с данной категорией
+        long currentCategory = drawer.getCurrentSelection();
+        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+        String message;
+        if (currentCategory == idAllNotes) {
+            message = getString(R.string.want_to_delete_all_notes);
+        }
+        else {
+            message = getString(R.string.want_to_clear_category);
+        }
+        if (id == R.id.action_clear_category) { // Удалить все заметки с данной категорией (либо просто все заметки)
             new AlertDialog.Builder(this)
                     .setTitle(R.string.warning)
-                    .setMessage(R.string.want_to_clear_category)
+                    .setMessage(message)
                     .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -409,6 +436,41 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+    // Обработка нажатий на элемент nav. drawer
+    private void drawerPushed(IDrawerItem drawerItem) {
+        long itemId = drawerItem.getIdentifier();
+        if (itemId == mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, -1)) {
+            showEditCategoryDialog(false);
+        }
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1)) {
+            setTitle(getString(R.string.all_notes));
+            mAllNotes = mNoteDAO.getAll();
+            mRecyclerAdapter.setItems(mAllNotes);
+            if (!mAllNotes.isEmpty()) {
+                isEmpty.setVisibility(View.GONE);
+            }
+        }
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
+        else if (itemId == mSharedPreferences.getLong(Constants.ID_ABOUT, -1)) {
+            Intent intent = new Intent(this, AboutActivity.class);
+            startActivity(intent);
+        }
+        else {      // Фильтруем заметки по определенной категории
+            Category category = (Category) drawerItem.getTag();
+            final List<Note> filtered = mNoteDAO.getFromCategory(category.getId());
+            mRecyclerAdapter.setItems(filtered);
+            setTitle(category.getName());
+            if (filtered.isEmpty()) {
+                isEmpty.setVisibility(View.VISIBLE);
+            }
+        }
+        drawer.closeDrawer();
+    }
+
+
     private void setUpDrawer() {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
 
@@ -478,6 +540,7 @@ public class MainActivity extends AppCompatActivity {
             Log.wtf(TAG, "Drawable.ConstantState is null");
             return;
         }
+        // Копия иконки для того, чтобы каждая категория имела свой цвет, не влияя на оригинал
         Drawable icon = original.getConstantState().newDrawable();
         icon.mutate();
         icon.setColorFilter(category.getColor(), PorterDuff.Mode.MULTIPLY);
@@ -494,44 +557,6 @@ public class MainActivity extends AppCompatActivity {
         drawer.addItemAtPosition(newItem, position);    //  и помещаем новую категорию на эту позицию
         drawer.closeDrawer();
     }
-
-
-    // Обработка нажатий на элемент nav. drawer
-    private void drawerPushed(IDrawerItem drawerItem) {
-        long itemId = drawerItem.getIdentifier();
-        if (itemId == mSharedPreferences.getLong(Constants.ID_CREATE_CATEGORY, -1)) {
-                showEditCategoryDialog(false);
-        }
-        else if (itemId == mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1)) {
-            setTitle(getString(R.string.all_notes));
-            mAllNotes = mNoteDAO.getAll();
-            mRecyclerAdapter.setItems(mAllNotes);
-            if (!mAllNotes.isEmpty()) {
-                isEmpty.setVisibility(View.GONE);
-            }
-        }
-        else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivity(intent);
-        }
-        else if (itemId == mSharedPreferences.getLong(Constants.ID_ABOUT, -1)) {
-            Intent intent = new Intent(this, AboutActivity.class);
-            startActivity(intent);
-        }
-        else {      // Фильтруем заметки по определенной категории
-            Category category = (Category) drawerItem.getTag();
-            final List<Note> filtered = mNoteDAO.getFromCategory(category.getId());
-            mRecyclerAdapter.setItems(filtered);
-            setTitle(category.getName());
-            if (filtered.isEmpty()) {
-                isEmpty.setVisibility(View.VISIBLE);
-            }
-        }
-        drawer.closeDrawer();
-    }
-
-
-
 
 
     private void setUpRecyclerView() {
