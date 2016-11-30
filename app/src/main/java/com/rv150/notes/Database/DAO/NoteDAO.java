@@ -65,7 +65,7 @@ public class NoteDAO {
                 " JOIN " + NOTE_CATEGORY_TABLE + " ON "
                 + NOTE_TABLE + '.' + NOTE_ID + '=' +
                 NOTE_CATEGORY_TABLE + '.' + NOTE_CATEGORY_NOTE_ID +
-                " WHERE " + NOTE_CATEGORY_CATEGORY_ID + " = ?";
+                " WHERE " + NOTE_CATEGORY_TABLE + '.' + NOTE_CATEGORY_CATEGORY_ID + " = ?";
 
         Cursor cursor = db.rawQuery(query, new String[]{String.valueOf(categoryId)});
         List<Note> notes = new ArrayList<>();
@@ -109,12 +109,6 @@ public class NoteDAO {
     }
 
 
-    public void removeNote(long id) {
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
-        Log.i(TAG, "Note was removed");
-    }
-
     public void updateNote(Note note) {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -126,7 +120,33 @@ public class NoteDAO {
         Log.i(TAG, "Note was updated");
     }
 
-    public void deleteAll() {
+
+    public void removeNote(long id) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.delete(DBHelper.Note.TABLE_NAME, DBHelper.Note._ID + "=?", new String[]{String.valueOf(id)});
+        Log.i(TAG, "Note was removed");
+    }
+
+    public void removeNotesFromCategory (long categoryId) {
+        SQLiteDatabase db = mDBHelper.getReadableDatabase();
+        String NOTE_TABLE = DBHelper.Note.TABLE_NAME;
+        String NOTE_ID = DBHelper.Note._ID;
+
+        String NOTE_CATEGORY_TABLE = DBHelper.NoteCategory.TABLE_NAME;
+        String NOTE_CATEGORY_NOTE_ID = DBHelper.NoteCategory.COLUMN_NAME_NOTE_ID;
+        String NOTE_CATEGORY_CATEGORY_ID = DBHelper.NoteCategory.COLUMN_NAME_CATEGORY_ID;
+
+        String query = "DELETE FROM " + NOTE_TABLE +
+                " WHERE " + NOTE_ID + " IN (SELECT " +
+                NOTE_CATEGORY_NOTE_ID + " FROM " + NOTE_CATEGORY_TABLE +
+                " WHERE " + NOTE_CATEGORY_CATEGORY_ID + " = ?)";
+        db.rawQuery(query, new String[]{String.valueOf(categoryId)});
+        Log.i(TAG, "Notes from category was removed");
+    }
+
+
+
+    public void removeAll() {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.delete(DBHelper.Note.TABLE_NAME, null, null);
         Log.i(TAG, "All notes were removed");

@@ -13,7 +13,7 @@ import com.rv150.notes.ThemeChanger;
  * Created by Rudnev on 29.11.2016.
  */
 
-public class PrefActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

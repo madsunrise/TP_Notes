@@ -118,9 +118,19 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
         notifyItemInserted(pos);
     }
 
+    public void updateItem (Note note) {
+        int pos = mItems.indexOf(note);
+        if (pos != -1) {
+            mItems.set(pos, note);
+            notifyItemChanged(pos);
+        }
+    }
+
+
     public void removeItem (Note note) {
         removeItemAtPosition(mItems.indexOf(note));
     }
+
     public void removeItemAtPosition (int pos) {
         if (pos >= 0 && pos < mItems.size()) {
             mItems.remove(pos);
@@ -128,12 +138,9 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
         }
     }
 
-    public void updateItem (Note note) {
-        int pos = mItems.indexOf(note);
-        if (pos != -1) {
-            mItems.set(pos, note);
-            notifyItemChanged(pos);
-        }
+    public void removeAllItems() {
+        mItems.clear();
+        notifyDataSetChanged();
     }
 
 }

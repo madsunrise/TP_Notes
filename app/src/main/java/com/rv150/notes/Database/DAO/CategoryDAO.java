@@ -73,12 +73,6 @@ public class CategoryDAO {
     }
 
 
-    public void removeCategory(long id) {
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.delete(DBHelper.Category.TABLE_NAME, DBHelper.Category._ID + "=?", new String[]{String.valueOf(id)});
-        Log.i(TAG, "Category was removed");
-    }
-
     public void updateCategory(Category category) {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
@@ -89,7 +83,16 @@ public class CategoryDAO {
         Log.i(TAG, "Category was updated");
     }
 
-    public void deleteAll() {
+
+    public void removeCategory(long id) {
+        SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        db.delete(DBHelper.Category.TABLE_NAME, DBHelper.Category._ID + "=?", new String[]{String.valueOf(id)});
+        Log.i(TAG, "Category was removed");
+    }
+
+
+
+    public void removeAll() {
         SQLiteDatabase db = mDBHelper.getWritableDatabase();
         db.delete(DBHelper.Category.TABLE_NAME, null, null);
         Log.i(TAG, "All categoryies were removed");

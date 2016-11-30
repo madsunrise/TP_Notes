@@ -44,4 +44,8 @@
     <string name="yes">Да</string>
     <string name="no">Нет</string>
     <string name="undo_adding_note">Отменить создание заметки?</string>
+    <string name="remove_category">Удалить категорию</string>
+    <string name="clear_category">Очистить категорию</string>
+    <string name="want_to_clear_category">Вы действительно хотите удалить заметки с данной категорией?</string>
+    <string name="want_to_remove_category">Вы действительно хотите удалить эту категорию?</string>
 </resources>

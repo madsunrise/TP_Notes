@@ -51,7 +51,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static com.rv150.notes.Constants.RC_ADDING_NOTE;
-import static com.rv150.notes.Constants.RC_SETTINGS;
 import static com.rv150.notes.Constants.RC_VIEWING_NOTE;
 import static com.rv150.notes.Constants.RESULT_MODIFIED;
 import static com.rv150.notes.Constants.RESULT_REMOVED;
@@ -182,13 +181,37 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent intent = new Intent(this, PrefActivity.class);
-            startActivityForResult(intent, RC_SETTINGS);
+        if (id == R.id.action_clear_category) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.warning)
+                    .setMessage(R.string.want_to_clear_category)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            clearCategory();
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
             return true;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void clearCategory() {
+        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+        long currentSelection = drawer.getCurrentSelection();
+        if (idAllNotes == currentSelection) { // Выбран пункт "Все заметки"
+            mNoteDAO.removeAll();
+            mRecyclerAdapter.removeAllItems();
+        }
+        else {              // Получаем выделенную вещь, а из нее - объект категории
+            IDrawerItem drawerItem = drawer.getDrawerItem(currentSelection);
+            Category category = (Category) drawerItem.getTag();
+            mNoteDAO.removeNotesFromCategory(category.getId());
+            mRecyclerAdapter.removeAllItems();
+        }
     }
 
 
@@ -374,7 +397,7 @@ public class MainActivity extends AppCompatActivity {
             mRecyclerAdapter.setItems(mAllNotes);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_SETTINGS, -1)) {
-            Intent intent = new Intent(this, PrefActivity.class);
+            Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
         else if (itemId == mSharedPreferences.getLong(Constants.ID_ABOUT, -1)) {
