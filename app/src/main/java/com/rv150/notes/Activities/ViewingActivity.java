@@ -133,7 +133,7 @@ public class ViewingActivity extends AppCompatActivity {
                             removeNote();
                         }
                     })
-                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.cancel();
@@ -168,37 +168,33 @@ public class ViewingActivity extends AppCompatActivity {
 
             // Установим цвет обводки textView
             int width = (int) getResources().getDimension(R.dimen.textview_border);
-            GradientDrawable original = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
-            Drawable.ConstantState state = original.getConstantState();
-            if (state == null) {
-                Log.wtf(TAG, "Constant state is null!");
-                return;
-            }
-
-            GradientDrawable drawable = (GradientDrawable) state.newDrawable();
-            drawable.mutate();
+            GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
             drawable.setStroke(width, category.getColor());
 
-            // При использовании темной темы
-            if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    drawable.setColor(getColor(R.color.material_drawer_dark_background));
-                    textView.setTextColor(getColor(R.color.white));
-                }
-                else {
-                    drawable.setColor(getResources().getColor(R.color.material_drawer_dark_background));
-                    textView.setTextColor(getResources().getColor(R.color.white));
-                }
-            }
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_LIGHT) {
+                    drawable.setColor(getColor(R.color.md_light_background));
+                    textView.setTextColor(getColor(R.color.md_black_1000));
+                }
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                    drawable.setColor(getColor(R.color.md_dark_background));
+                    textView.setTextColor(getColor(R.color.md_white_1000));
+                }
                 textView.setBackground(drawable);
-                textView.setTextColor(getColor(R.color.md_black_1000));
             }
             else {
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_LIGHT) {
+                    drawable.setColor(getResources().getColor(R.color.md_light_background));
+                    textView.setTextColor(getResources().getColor(R.color.md_black_1000));
+                }
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                    drawable.setColor(getResources().getColor(R.color.md_dark_background));
+                    textView.setTextColor(getResources().getColor(R.color.md_white_1000));
+                }
                 textView.setBackgroundDrawable(drawable);
-                textView.setTextColor(getResources().getColor(R.color.md_black_1000));
             }
+
             linearLayout.addView(textView);
         }
     }

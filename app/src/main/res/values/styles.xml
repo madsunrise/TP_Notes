@@ -8,7 +8,7 @@
     <style name="AppTheme.NoActionBarDark" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
-        <item name="android:textColor">@color/white</item>
+        <item name="android:textColor">@color/md_white_1000</item>
     </style>
 
 </resources>

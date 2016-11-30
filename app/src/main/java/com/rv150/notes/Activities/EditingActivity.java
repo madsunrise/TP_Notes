@@ -167,23 +167,29 @@ public class EditingActivity extends AppCompatActivity {
             GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(this, R.drawable.textview_border);
             drawable.setStroke(width, category.getColor());
 
-            if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    drawable.setColor(getColor(R.color.material_drawer_dark_background));
-                    textView.setTextColor(getColor(R.color.white));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_LIGHT) {
+                    drawable.setColor(getColor(R.color.md_light_background));
+                    textView.setTextColor(getColor(R.color.md_black_1000));
                 }
-                else {
-                    drawable.setColor(getResources().getColor(R.color.material_drawer_dark_background));
-                    textView.setTextColor(getResources().getColor(R.color.white));
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                    drawable.setColor(getColor(R.color.md_dark_background));
+                    textView.setTextColor(getColor(R.color.md_white_1000));
                 }
-            }
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                 textView.setBackground(drawable);
             }
             else {
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_LIGHT) {
+                    drawable.setColor(getResources().getColor(R.color.md_light_background));
+                    textView.setTextColor(getResources().getColor(R.color.md_black_1000));
+                }
+                if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                    drawable.setColor(getResources().getColor(R.color.md_dark_background));
+                    textView.setTextColor(getResources().getColor(R.color.md_white_1000));
+                }
                 textView.setBackgroundDrawable(drawable);
             }
+
             linearLayout.addView(textView);
         }
 

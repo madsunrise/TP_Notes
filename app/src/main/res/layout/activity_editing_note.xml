@@ -74,7 +74,7 @@
         <Button
             android:text="@string/to_choose_categories"
             android:layout_gravity="end"
-            android:textColor="@color/white"
+            android:textColor="@color/md_white_1000"
             android:layout_width="146dp"
             android:layout_height="wrap_content"
             android:id="@+id/button2"

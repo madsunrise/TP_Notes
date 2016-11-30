@@ -336,7 +336,7 @@ public class MainActivity extends AppCompatActivity {
         drawer = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
-                .withHeader(R.layout.nav_header_main)
+                .withHeader(R.layout.nav_header)
                 .addDrawerItems(
                         allNotes,
                         createCategory,

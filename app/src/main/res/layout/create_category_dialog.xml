@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/choose_color_btn"
         android:text="@string/choose_color"
-        android:textColor="@color/white"
+        android:textColor="@color/md_white_1000"
         android:onClick="openColorPicker"
         android:layout_gravity="end"/>
 

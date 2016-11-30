@@ -70,23 +70,28 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
                 int width = (int) mContext.getResources().getDimension(R.dimen.textview_border);
                 GradientDrawable drawable = (GradientDrawable) ContextCompat.getDrawable(mContext, R.drawable.textview_border);
                 drawable.setStroke(width, category.getColor());
+                
 
-                // В случае темной темы
-                if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        drawable.setColor(mContext.getColor(R.color.material_drawer_dark_background));
-                        textView.setTextColor(mContext.getColor(R.color.white));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (ThemeChanger.getTheme() == ThemeChanger.THEME_LIGHT) {
+                        drawable.setColor(mContext.getColor(R.color.md_light_background));
+                        textView.setTextColor(mContext.getColor(R.color.md_black_1000));
                     }
-                    else {
-                        drawable.setColor(mContext.getResources().getColor(R.color.material_drawer_dark_background));
-                        textView.setTextColor(mContext.getResources().getColor(R.color.white));
+                    if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                        drawable.setColor(mContext.getColor(R.color.md_dark_background));
+                        textView.setTextColor(mContext.getColor(R.color.md_white_1000));
                     }
-                }
-
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
                     textView.setBackground(drawable);
                 }
                 else {
+                    if (ThemeChanger.getTheme() == ThemeChanger.THEME_LIGHT) {
+                        drawable.setColor(mContext.getResources().getColor(R.color.md_light_background));
+                        textView.setTextColor(mContext.getResources().getColor(R.color.md_black_1000));
+                    }
+                    if (ThemeChanger.getTheme() == ThemeChanger.THEME_DARK) {
+                        drawable.setColor(mContext.getResources().getColor(R.color.md_dark_background));
+                        textView.setTextColor(mContext.getResources().getColor(R.color.md_white_1000));
+                    }
                     textView.setBackgroundDrawable(drawable);
                 }
                 viewHolder.mCategories.addView(textView);
