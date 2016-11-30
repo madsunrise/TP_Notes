@@ -49,4 +49,5 @@
     <string name="want_to_clear_category">Вы действительно хотите удалить заметки с данной категорией?</string>
     <string name="want_to_remove_category">Вы действительно хотите удалить эту категорию?</string>
     <string name="note_was_created">Заметка создана</string>
+    <string name="this_category_cant_be_removed">Эту категорию нельзя удалить</string>
 </resources>

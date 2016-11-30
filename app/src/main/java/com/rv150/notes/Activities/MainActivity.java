@@ -198,6 +198,20 @@ public class MainActivity extends AppCompatActivity {
                     .show();
             return true;
         }
+        if (id == R.id.action_remove_category) {
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.warning)
+                    .setMessage(R.string.want_to_remove_category)
+                    .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            removeCategory();
+                        }
+                    })
+                    .setNegativeButton(R.string.no, null)
+                    .show();
+            return true;
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -214,6 +228,23 @@ public class MainActivity extends AppCompatActivity {
             Category category = (Category) drawerItem.getTag();
             mNoteDAO.removeNotesFromCategory(category.getId());
             mRecyclerAdapter.removeAllItems();
+        }
+    }
+
+    private void removeCategory() {
+        long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+        long currentSelection = drawer.getCurrentSelection();
+        if (idAllNotes == currentSelection) { // Выбран пункт "Все заметки"
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.this_category_cant_be_removed, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+        else {
+            IDrawerItem drawerItem = drawer.getDrawerItem(currentSelection);
+            Category category = (Category) drawerItem.getTag();
+            mCategoryDAO.removeCategory(category.getId());
+            drawer.removeItem(currentSelection);
+            drawer.setSelection(idAllNotes);
         }
     }
 
