@@ -7,6 +7,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -48,7 +49,7 @@ public class EditingActivity extends AppCompatActivity {
 
     // Флаг, означающий добавляем мы заметку или изменяем существующую
     private boolean isModifying = false;
-    private Note note;
+    private Note mNote;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,46 +70,32 @@ public class EditingActivity extends AppCompatActivity {
         if (extras != null) {
             isModifying = true;
             setTitle(R.string.modifying_note);
-            note = extras.getParcelable(Note.class.getSimpleName());
-            if (note != null) {
-                mChoosenCategories = note.getCategories();
+            mNote = extras.getParcelable(Note.class.getSimpleName());
+            if (mNote != null) {
+                mChoosenCategories = mNote.getCategories();
                 updateCategoriesTextViews(mChoosenCategories);
-                mName.setText(note.getName());
-                mContent.setText(note.getContent());
+                mName.setText(mNote.getName());
+                mContent.setText(mNote.getContent());
             }
         } else {
-            note = new Note();
+            mNote = new Note();
         }
     }
 
-    public void saveNote(View view) {
-        String name = mName.getText().toString();
-        String content = mContent.getText().toString();
-        if (name.isEmpty() || content.isEmpty()) {
-            Toast toast = Toast.makeText(getApplicationContext(),
-                    R.string.fill_all_fields, Toast.LENGTH_SHORT);
-            toast.show();
-            return;
-        }
-
-        note.setName(name);
-        note.setContent(content);
-        note.setCategories(mChoosenCategories);
-
-        Intent intent = new Intent();
-        intent.putExtra(Note.class.getSimpleName(), note);
-        setResult(RESULT_OK, intent);
-
-        // Сохраняем в базе
-        if (isModifying) {
-            mNoteDAO.updateNote(note);
-        } else {
-            mNoteDAO.insertNote(note);
-        }
-
-        finish();
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("choosenCategories", (ArrayList<? extends Parcelable>) mChoosenCategories);
     }
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mChoosenCategories = savedInstanceState.getParcelableArrayList("choosenCategories");
+        if (mChoosenCategories != null) {
+            updateCategoriesTextViews(mChoosenCategories);
+        }
+    }
 
     public void chooseCategories(View view) {
         if (mAllCategories.isEmpty()) {
@@ -147,7 +134,6 @@ public class EditingActivity extends AppCompatActivity {
                 .setView(listView)
                 .show();
     }
-
 
 
 
@@ -192,7 +178,34 @@ public class EditingActivity extends AppCompatActivity {
 
             linearLayout.addView(textView);
         }
+    }
 
+    public void saveNote(View view) {
+        String name = mName.getText().toString();
+        String content = mContent.getText().toString();
+        if (name.isEmpty() || content.isEmpty()) {
+            Toast toast = Toast.makeText(getApplicationContext(),
+                    R.string.fill_all_fields, Toast.LENGTH_SHORT);
+            toast.show();
+            return;
+        }
+
+        mNote.setName(name);
+        mNote.setContent(content);
+        mNote.setCategories(mChoosenCategories);
+
+        Intent intent = new Intent();
+        intent.putExtra(Note.class.getSimpleName(), mNote);
+        setResult(RESULT_OK, intent);
+
+        // Сохраняем в базе
+        if (isModifying) {
+            mNoteDAO.updateNote(mNote);
+        } else {
+            mNoteDAO.insertNote(mNote);
+        }
+
+        finish();
     }
 
     private class CustomAdapter extends ArrayAdapter<Category>{

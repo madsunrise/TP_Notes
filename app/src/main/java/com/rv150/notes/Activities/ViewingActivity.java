@@ -2,7 +2,6 @@ package com.rv150.notes.Activities;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -38,7 +36,7 @@ import static com.rv150.notes.Constants.RESULT_REMOVED;
 public class ViewingActivity extends AppCompatActivity {
     private TextView mName;
     private TextView mContent;
-    private Note note;
+    private Note mNote;
     private static final String TAG = "Viewing Activity";
 
     // Флаг, означающий, была ли заметка отредактирована
@@ -60,7 +58,7 @@ public class ViewingActivity extends AppCompatActivity {
 
     public void editNote (View view) {
         Intent intent = new Intent(getApplicationContext(), EditingActivity.class);
-        intent.putExtra(Note.class.getSimpleName(), note);
+        intent.putExtra(Note.class.getSimpleName(), mNote);
         startActivityForResult(intent, RC_MODIFYING_NOTE);
     }
 
@@ -77,16 +75,16 @@ public class ViewingActivity extends AppCompatActivity {
     }
 
 
-    private void parseIntentData (Intent intent) {
+    private void parseIntentData(Intent intent) {
         Bundle extras = intent.getExtras();
         if (extras != null) {
-            note = extras.getParcelable(Note.class.getSimpleName());
-            if (note != null) {
-                String name = note.getName();
-                String content = note.getContent();
+            mNote = extras.getParcelable(Note.class.getSimpleName());
+            if (mNote != null) {
+                String name = mNote.getName();
+                String content = mNote.getContent();
                 mName.setText(name);
                 mContent.setText(content);
-                updateCategoriesTextViews(note.getCategories());
+                updateCategoriesTextViews(mNote.getCategories());
             }
         }
     }
@@ -95,13 +93,28 @@ public class ViewingActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (wasModified) {
             Intent intent = new Intent();   // Передаем измененную заметку
-            intent.putExtra(Note.class.getSimpleName(), note);
+            intent.putExtra(Note.class.getSimpleName(), mNote);
             setResult(RESULT_MODIFIED, intent);
         }
         else {
             setResult(RESULT_CANCELED);
         }
         finish();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(Note.class.getSimpleName(), mNote);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mNote = savedInstanceState.getParcelable(Note.class.getSimpleName());
+        if (mNote != null) {
+            updateCategoriesTextViews(mNote.getCategories());
+        }
     }
 
     @Override
@@ -147,10 +160,10 @@ public class ViewingActivity extends AppCompatActivity {
 
     private void removeNote() {
         NoteDAO noteDAO = new NoteDAO(this);
-        noteDAO.removeNote(note.getId());
+        noteDAO.removeNote(mNote.getId());
 
         Intent intent = new Intent();
-        intent.putExtra(Note.class.getSimpleName(), note);
+        intent.putExtra(Note.class.getSimpleName(), mNote);
         setResult(RESULT_REMOVED, intent);
         finish();
     }

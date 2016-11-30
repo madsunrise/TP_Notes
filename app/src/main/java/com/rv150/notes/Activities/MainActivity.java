@@ -140,13 +140,14 @@ public class MainActivity extends AppCompatActivity {
             Bundle extras = data.getExtras();
             Note note = extras.getParcelable(Note.class.getSimpleName());
             if (note != null) {
-                long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
-                drawer.setSelection(idAllNotes);    // Выставим пункт "все заметки"
                 Toast toast = Toast.makeText(getApplicationContext(),
                         R.string.note_was_created, Toast.LENGTH_SHORT);
                 toast.show();
             }
+            long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+            drawer.setSelection(idAllNotes);    // Выставим пункт "все заметки"
         }
+
         if (requestCode == RC_VIEWING_NOTE) {
             if (resultCode == RESULT_MODIFIED) { // изменили существующую
                 Bundle extras = data.getExtras();
@@ -154,6 +155,8 @@ public class MainActivity extends AppCompatActivity {
                 if (note != null) {
                     mRecyclerAdapter.updateItem(note);
                 }
+                long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+                drawer.setSelection(idAllNotes);    // Выставим пункт "все заметки"
             }
             else if (resultCode == RESULT_REMOVED) {    // удалили заметку
                 Bundle extras = data.getExtras();
@@ -164,9 +167,8 @@ public class MainActivity extends AppCompatActivity {
                             R.string.note_was_removed, Toast.LENGTH_SHORT);
                     toast.show();
                 }
-                if (mRecyclerAdapter.getItemCount() == 0) {
-                    isEmpty.setVisibility(View.VISIBLE);
-                }
+                long idAllNotes = mSharedPreferences.getLong(Constants.ID_ALL_NOTES, -1);
+                drawer.setSelection(idAllNotes);    // Выставим пункт "все заметки"
             }
         }
     }
@@ -179,6 +181,21 @@ public class MainActivity extends AppCompatActivity {
         } else {
             super.onBackPressed();
         }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Long currentSelection = drawer.getCurrentSelection();
+        outState.putLong("currentSelection", currentSelection);
+    }
+                    // Сохранение выбранной категории при повороте экрана
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Long currentSelection = savedInstanceState.getLong("currentSelection");
+        drawer.setSelection(currentSelection);
     }
 
 
@@ -229,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    // Создание или изменение уже существующей категории (в зав-ти от флага)
+    // Создание или изменение уже существующей категории (в зависимости от флага)
     private void showEditCategoryDialog(final boolean updateExisting) {
         choosenCategoryColor = -1; // Ставим белый цвет как цвет по умолчанию для категории
         final View dialogView = View.inflate(this, R.layout.editing_category_dialog, null);
