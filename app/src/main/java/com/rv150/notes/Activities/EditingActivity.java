@@ -57,7 +57,7 @@ public class EditingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         ThemeChanger.onActivityCreateSetTheme(this);
         setContentView(R.layout.activity_editing_note);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_adding);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar_editing);
         setSupportActionBar(toolbar);
 
         mName = (EditText) findViewById(R.id.input_note_name);

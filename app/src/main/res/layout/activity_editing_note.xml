@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <android.support.v7.widget.Toolbar
-    android:id="@+id/toolbar_adding"
+    android:id="@+id/toolbar_editing"
     android:minHeight="?attr/actionBarSize"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -23,6 +22,7 @@
             android:contentDescription="@string/save"
             android:onClick="saveNote"/>
     </android.support.v7.widget.Toolbar>
+
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -57,8 +57,6 @@
 
         </android.support.design.widget.TextInputLayout>
 
-
-
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="wrap_content"
@@ -66,9 +64,6 @@
             android:layout_marginTop="10dp"
             android:id="@+id/categories_lin_layout">
         </LinearLayout>
-
-
-
 
 
         <Button
@@ -80,7 +75,5 @@
             android:id="@+id/button2"
             android:onClick="chooseCategories"/>
 
-
     </LinearLayout>
-
 </LinearLayout>

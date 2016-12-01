@@ -13,7 +13,6 @@
     tools:context="com.rv150.notes.Activities.MainActivity"
     tools:showIn="@layout/activity_main">
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recycler_view_main"
         android:layout_width="match_parent"
