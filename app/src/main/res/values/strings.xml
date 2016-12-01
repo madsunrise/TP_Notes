@@ -57,4 +57,5 @@
     <string name="category_was_cleared">Категория очищена</string>
     <string name="delete_all">Удалить все</string>
     <string name="want_to_delete_all_notes">Вы действительно хотите удалить все заметки?</string>
+    <string name="edit_note">Изменить заметку</string>
 </resources>

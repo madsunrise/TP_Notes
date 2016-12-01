@@ -17,4 +17,8 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="LightPopupTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:textColor">@color/md_black_1000</item>
+        <item name="android:colorBackground">@color/md_light_background</item>
+    </style>
 </resources>
