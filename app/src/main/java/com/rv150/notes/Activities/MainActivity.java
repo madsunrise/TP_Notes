@@ -466,6 +466,9 @@ public class MainActivity extends AppCompatActivity {
             if (filtered.isEmpty()) {
                 isEmpty.setVisibility(View.VISIBLE);
             }
+            else {
+                isEmpty.setVisibility(View.GONE);
+            }
         }
         drawer.closeDrawer();
     }
