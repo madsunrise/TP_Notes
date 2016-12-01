@@ -262,7 +262,7 @@ public class EditingActivity extends AppCompatActivity {
             boolean isChecked = checkedPositions[position];
             checkedTextView.setChecked(isChecked);
 
-            // Соответсвующая категории цветная иконка
+            // Соответствующая категории цветная иконка
             ImageView imageView = (ImageView) convertView.findViewById(R.id.icon);
             imageView.setColorFilter(item.getColor(), PorterDuff.Mode.MULTIPLY);
             return convertView;

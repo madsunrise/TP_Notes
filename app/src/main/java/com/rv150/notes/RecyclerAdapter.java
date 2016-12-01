@@ -160,5 +160,4 @@ public class RecyclerAdapter extends  RecyclerView.Adapter<RecyclerAdapter.ViewH
         mItems.clear();
         notifyDataSetChanged();
     }
-
 }

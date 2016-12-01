@@ -99,15 +99,6 @@ public class CategoryDAO {
     }
 
 
-
-    public void removeAll() {
-        SQLiteDatabase db = mDBHelper.getWritableDatabase();
-        db.delete(DBHelper.Category.TABLE_NAME, null, null);
-        Log.i(TAG, "All categoryies were removed");
-    }
-
-
-
     private Category mapCategory(Cursor cursor) {
         String name = cursor.getString(
                 cursor.getColumnIndexOrThrow(DBHelper.Category.COLUMN_NAME_NAME));
